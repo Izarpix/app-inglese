@@ -1,0 +1,56 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Dipendenze (si riscaricano da sole con: npm install)
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+dist/
+web-build/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Build native
+ios/
+android/
+*.ipa
+*.apk
+*.aab
+
+# Segreti — MAI committare chiavi API
+.env
+.env.*
+!.env.example
+
+# Log e temporanei
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.cache/
+tmp/
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+.idea/
+
+# ---------------------------------------------------------------
+# File di lavoro e di contesto: restano SOLO in locale.
+# Su GitHub va solo ciò che serve a far girare l'app.
+# ---------------------------------------------------------------
+CLAUDE.md
+docs/
+*.local.md
+scratch/
+note/
+appunti/

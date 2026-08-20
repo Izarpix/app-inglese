@@ -54,3 +54,18 @@ docs/
 scratch/
 note/
 appunti/
+
+# ---------------------------------------------------------------
+# Aggiunte dal template Expo (SDK 57) — 2026-08-20
+# ---------------------------------------------------------------
+expo-env.d.ts
+.metro-health-check*
+*.tsbuildinfo
+*.pem
+.kotlin/
+
+# ---------------------------------------------------------------
+# Materiale d'esame di Nicola: sorgente dei contenuti, resta SOLO in locale.
+# Materiale universitario protetto da copyright — mai su GitHub.
+# ---------------------------------------------------------------
+inglese magistrale/

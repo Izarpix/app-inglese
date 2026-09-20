@@ -7,6 +7,11 @@
 # Create deployment, Production, and drop in the zip this script leaves in the
 # project folder. The build id changes at every build, so every phone with the
 # app on its home screen picks the new version up within a minute by itself.
+#
+# WATCH OUT: keep that browser tab in the foreground while it uploads. In a
+# background tab the browser throttles the uploader down to about one file a
+# minute and it looks like it has frozen on "Preparing upload". Bringing the
+# tab back to the front finishes it in seconds.
 set -e
 
 cd "$(dirname "$0")/.."

@@ -27,7 +27,14 @@ export default function Root({ children }: PropsWithChildren) {
 
         {/* Safari: "Aggiungi alla schermata Home" */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        {/*
+          "black" and not "black-translucent" on purpose. With the translucent
+          setting iOS pushes the page down by the height of the status bar
+          without making it any shorter, and that same height comes back as a
+          gap under the tab bar. With "black" the status bar gets its own space,
+          the page is exactly as tall as what is left, and the gap disappears.
+        */}
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="apple-mobile-web-app-title" content="Inglesiamo" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" href="/favicon.png" type="image/png" />
@@ -74,26 +81,6 @@ const css = `
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
-
-  /*
-   * A solid bar behind the status bar.
-   *
-   * With apple-mobile-web-app-capable the page runs full screen and scrolls
-   * under the clock, so iOS puts a blur over that band to keep the time
-   * readable. Blurred content looked like a rendering fault. Painting the band
-   * in the app's own blue leaves iOS nothing to blur.
-   */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: env(safe-area-inset-top, 0px);
-    background-color: #012169;
-    pointer-events: none;
-    z-index: 2147483647;
   }
 
   * {

@@ -18,6 +18,7 @@ import { PhoneBox } from '@/components/london/phone-box';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
+import { useDisplayReport } from '@/src/hooks/use-display-report';
 import { useSafeBottom } from '@/src/hooks/use-safe-bottom';
 import { pageBuildId } from '@/src/sync/auto-update';
 import { ensureSession, flush, pendingCount } from '@/src/sync/remote';
@@ -38,6 +39,7 @@ export default function ProfileScreen() {
   // Temporary readout: tells us what iOS reports for the home indicator area,
   // which is what the tab bar has to cover. Remove once the layout is settled.
   const safeBottom = useSafeBottom();
+  const display = useDisplayReport();
 
   // Opening this screen is a good moment to retry anything still waiting.
   useEffect(() => {
@@ -121,6 +123,14 @@ export default function ProfileScreen() {
               <Row icon="palette-outline" label="Made by" value="Izarpix" />
               <Row icon="update" label="Build" value={pageBuildId() ?? 'dev'} />
               <Row icon="arrow-collapse-down" label="Safe area" value={`${Math.round(safeBottom)} pt`} />
+              {display ? (
+                <>
+                  <Row icon="monitor-screenshot" label="Viewport" value={display.viewport} />
+                  <Row icon="cellphone" label="Screen" value={display.screen} />
+                  <Row icon="border-none-variant" label="Insets" value={display.insets} />
+                  <Row icon="application-outline" label="Standalone" value={display.standalone} />
+                </>
+              ) : null}
               <Row
                 icon="cloud-check-outline"
                 label="Sync"

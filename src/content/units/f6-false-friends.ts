@@ -1,17 +1,48 @@
-import type { Deck } from '../types';
+import type { Unit } from '../types';
 
-/**
- * Lesson 16 of the syllabus (word building) crossed with the false friends that
- * cost Italian students marks. Flashcard-style `vocab` cards mixed with
- * exam-style `choice` cards.
- */
-export const falseFriends: Deck = {
-  id: 'ff',
+export const f6FalseFriends: Unit = {
+  id: 'f6',
+  stage: 'foundations',
+  order: 6,
   title: 'False friends and tricky words',
-  description:
-    'Words that look Italian and are not, plus the academic vocabulary you actually need.',
-  syllabusUnits: [16],
-  level: 'B2',
+  summary: 'The words that look Italian and mean something else.',
+  level: 'B1',
+  errorTags: ['false-friend', 'uncountable', 'do-vs-make'],
+  lesson: {
+    rule: 'A word that looks like its Italian twin usually is not one: check the false friends before you trust them, because they are the mistakes that change your meaning rather than just your grammar.',
+    schema: [
+      { label: 'actually', value: 'in fact, not attualmente (which is currently)' },
+      { label: 'eventually', value: 'in the end, not eventualmente (which is if necessary)' },
+      { label: 'sensible', value: 'reasonable, not sensibile (which is sensitive)' },
+      { label: 'argument', value: 'a dispute, not argomento (which is topic)' },
+      { label: 'library', value: 'biblioteca, not libreria (which is bookshop)' },
+      { label: 'educated', value: 'schooled, not educato (which is polite)' },
+      { label: 'pretend', value: 'to fake, not pretendere (which is to demand or expect)' },
+    ],
+    examples: [
+      {
+        wrong: 'Actually I am working on my thesis.',
+        right: 'Currently I am working on my thesis.',
+        note: 'If you mean right now, "actually" says the opposite of what you think.',
+      },
+      {
+        wrong: 'Can I make you a question?',
+        right: 'Can I ask you a question?',
+        note: 'Questions are asked, never made.',
+      },
+      {
+        wrong: 'I have 25 years.',
+        right: 'I am 25.',
+        note: 'In English you ARE an age, you do not HAVE it.',
+      },
+    ],
+    traps: [
+      'The dangerous ones are not the words you do not know, but the ones you are sure about.',
+      'do and make split the work: do a job, do homework, do research; make a decision, make a mistake, make an effort.',
+      'Some false friends are also uncountable: advice, information, news.',
+      'Academic vocabulary has its own: "argument" in an essay does mean a line of reasoning, but never a topic.',
+    ],
+  },
   cards: [
     {
       id: 'ff-001',
@@ -203,36 +234,6 @@ export const falseFriends: Deck = {
       answers: ['She has a red car.'],
       explanation: "In English the adjective always comes BEFORE the noun, with no exceptions.",
       errorTags: ['adjective-order'],
-      level: 'B1',
-    },
-    {
-      id: 'ff-022',
-      type: 'choice',
-      prompt: 'Word building: da "analyse" il sostantivo è ___.',
-      answers: ['analysis', 'analyse', 'analysing', 'analysation'],
-      options: ['analysis', 'analyse', 'analysing', 'analysation'],
-      explanation: "The plural is \"analyses\", pronounced /uh-NAL-uh-seez/. Word building is a fixed part of the mock exam.",
-      errorTags: ['word-formation'],
-      level: 'B2',
-    },
-    {
-      id: 'ff-023',
-      type: 'choice',
-      prompt: 'Word building: da "able" il sostantivo è ___.',
-      answers: ['ability', 'ableness', 'abilty', 'abling'],
-      options: ['ability', 'ableness', 'abilty', 'abling'],
-      explanation: "Recurring pattern: -able becomes -ability (able/ability, responsible/responsibility).",
-      errorTags: ['word-formation'],
-      level: 'B1',
-    },
-    {
-      id: 'ff-024',
-      type: 'choice',
-      prompt: 'Word building: il contrario di "employment" è ___.',
-      answers: ['unemployment', 'disemployment', 'inemployment', 'nonemploy'],
-      options: ['unemployment', 'disemployment', 'inemployment', 'nonemploy'],
-      explanation: "Negative prefixes are not interchangeable and are learnt with the word: un-, in-, im-, il-, ir-, dis-.",
-      errorTags: ['word-formation'],
       level: 'B1',
     },
     {

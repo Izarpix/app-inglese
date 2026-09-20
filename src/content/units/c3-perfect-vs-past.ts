@@ -1,18 +1,48 @@
-import type { Deck } from '../types';
+import type { Unit } from '../types';
 
-/**
- * Syllabus lessons 2-3. Every sentence is written from scratch (ADR-007) and set
- * in the world the learner actually lives in: university, data, financial markets.
- */
-export const presentPerfectVsPastSimple: Deck = {
-  id: 'ppps',
+export const c3PerfectVsPast: Unit = {
+  id: 'c3',
+  stage: 'core',
+  order: 3,
   title: 'Present perfect or past simple',
-  description:
-    'The classic Italian mistake: "I have seen him yesterday". When the past is closed and when it is still open.',
-  syllabusUnits: [2, 3],
+  summary: 'The single distinction the exam tests most. At B2 there can be no confusion at all.',
   level: 'B1',
+  errorTags: ['present-perfect-vs-past-simple', 'time-adverbial', 'for-since', 'been-vs-gone', 'irregular-verb'],
+  lesson: {
+    rule: 'The present perfect opens a subject; the moment you start telling the story, or answer a wh- question about it, you must switch to the past simple.',
+    schema: [
+      { label: 'Opening a subject', value: 'Have you ever had sushi?' },
+      { label: 'Telling the story', value: 'Yes, I had it last week and I did not like it' },
+      { label: 'Closed time words', value: 'yesterday, last week, in 2008, ago, when...? = past simple' },
+      { label: 'Open time words', value: 'today, this week, ever, never, yet, just, already = present perfect' },
+      { label: 'Still true now', value: 'for, since = present perfect' },
+      { label: 'Rule of thumb', value: 'a wh- question pulls the conversation into the past simple' },
+    ],
+    examples: [
+      {
+        wrong: 'When have you submitted the report?',
+        right: 'When did you submit the report?',
+        note: '"When" asks for an exact moment, so the past is closed.',
+      },
+      {
+        wrong: 'I have been to the conference last March.',
+        right: 'I went to the conference last March.',
+        note: 'Without a time expression, "I have been to the conference" would be correct.',
+      },
+      {
+        wrong: 'He has wrote the introduction.',
+        right: 'He has written the introduction.',
+        note: 'After "have" comes the third column, not the second.',
+      },
+    ],
+    traps: [
+      'The Italian passato prossimo does not map onto the present perfect. Only the time expression decides.',
+      'Where there is "ago", there is never "have".',
+      'A conversation often starts in the present perfect and continues entirely in the past simple. Practise that switch out loud.',
+      '"For five years" does not force the present perfect: "He lived in Rome for five years, then he moved" is past simple.',
+    ],
+  },
   cards: [
-    // --- correct: la frase contiene l'errore tipico, va riscritta giusta ---
     {
       id: 'ppps-001',
       type: 'correct',
@@ -177,8 +207,6 @@ export const presentPerfectVsPastSimple: Deck = {
       errorTags: ['for-since', 'preposition', 'present-perfect-vs-past-simple'],
       level: 'B1',
     },
-
-    // --- fill: un solo spazio, verbo fra parentesi ---
     {
       id: 'ppps-018',
       type: 'fill',
@@ -301,8 +329,6 @@ export const presentPerfectVsPastSimple: Deck = {
       errorTags: ['for-since', 'present-perfect-vs-past-simple'],
       level: 'B2',
     },
-
-    // --- rewrite: dall'italiano all'inglese ---
     {
       id: 'ppps-031',
       type: 'rewrite',

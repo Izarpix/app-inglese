@@ -6,23 +6,52 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gradient } from '@/components/london/gradient';
 import { UnionJack } from '@/components/london/union-jack';
 import { Gradients, London, Radius } from '@/constants/london';
-import { allCards } from '@/src/content';
-import { lessonForTag } from '@/src/content/lessons';
+import { allCards, unitForTag } from '@/src/content';
 import { useAppState, weakestTags } from '@/src/store/app-state';
 
-/** Human wording for the error categories, so the screen is readable in Italian. */
+/** Human wording for the error categories, so the screen reads as English. */
 const TAG_LABEL: Record<string, string> = {
-  'present-perfect-vs-past-simple': 'Present perfect vs past simple',
-  'time-adverbial': 'Espressioni di tempo (yesterday, ago, yet)',
-  'for-since': 'For e since',
-  'state-verbs': 'Verbi di stato',
-  'irregular-verb': 'Verbi irregolari',
-  'been-vs-gone': 'Been o gone',
-  'question-form': 'Forma interrogativa',
-  'negative-form': 'Forma negativa',
-  'false-friend': 'Falsi amici',
-  preposition: 'Preposizioni',
-  article: 'Articoli',
+  'present-simple-vs-continuous': 'Present simple or continuous',
+  'state-verbs': 'State verbs',
+  'past-simple': 'Past simple',
+  'irregular-verb': 'Irregular verbs',
+  'narrative-tense': 'Narrative tenses',
+  'used-to': 'Used to',
+  'present-perfect-vs-past-simple': 'Present perfect or past simple',
+  'present-perfect-continuous': 'Present perfect continuous',
+  'time-adverbial': 'Time expressions (yesterday, ago, yet)',
+  'for-since': 'For and since',
+  'been-vs-gone': 'Been or gone',
+  'future-form': 'Future forms',
+  'future-time-clause': 'Future time and condition clauses',
+  modal: 'Modal verbs',
+  obligation: 'Obligation and necessity',
+  deduction: 'Deduction and speculation',
+  'past-infinitive': 'Past infinitives',
+  passive: 'The passive',
+  'double-object-passive': 'Passive with two objects',
+  'reported-speech': 'Reported speech',
+  'have-something-done': 'Have something done',
+  conditional: 'Conditionals',
+  wish: 'Wish',
+  'gerund-vs-infinitive': 'Gerund or infinitive',
+  'preposition-plus-gerund': 'Preposition plus -ing',
+  'phrasal-verb': 'Phrasal verbs',
+  get: 'Uses of get',
+  'word-formation': 'Word formation',
+  article: 'Articles',
+  quantifier: 'Quantifiers',
+  uncountable: 'Uncountable nouns',
+  preposition: 'Prepositions',
+  'false-friend': 'False friends',
+  'adjective-order': 'Adjective order',
+  'do-vs-make': 'Do or make',
+  'question-form': 'Question forms',
+  'negative-form': 'Negative forms',
+  'word-order': 'Word order',
+  'esp-trend-vocabulary': 'Trend vocabulary',
+  'esp-structure': 'Structures for describing data',
+  'esp-numbers': 'Numbers and proportions',
 };
 
 export default function ProgressScreen() {
@@ -64,7 +93,7 @@ export default function ProgressScreen() {
               </Text>
             ) : (
               weak.map((item) => {
-                const lesson = lessonForTag(item.tag);
+                const lesson = unitForTag(item.tag);
                 return (
                   <Pressable
                     key={item.tag}

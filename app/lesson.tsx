@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gradient } from '@/components/london/gradient';
 import { UnionJack } from '@/components/london/union-jack';
 import { Gradients, London, Radius } from '@/constants/london';
-import { getLesson } from '@/src/content/lessons';
+import { getUnit } from '@/src/content';
 
 /**
  * One lesson, rendered from its fixed four blocks. The screen has no branching
@@ -16,9 +16,10 @@ import { getLesson } from '@/src/content/lessons';
 export default function LessonScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const lesson = id ? getLesson(id) : undefined;
+  const unit = id ? getUnit(id) : undefined;
+  const lesson = unit?.lesson;
 
-  if (!lesson) {
+  if (!unit || !lesson) {
     return (
       <View style={styles.root}>
         <Text style={styles.missing}>Note not found.</Text>
@@ -36,9 +37,9 @@ export default function LessonScreen() {
               <Pressable onPress={() => router.back()} hitSlop={10} style={styles.close}>
                 <MaterialCommunityIcons name="close" size={24} color={London.white} />
               </Pressable>
-              <Text style={styles.kicker}>GRAMMAR NOTE · LEVEL {lesson.level}</Text>
-              <Text style={styles.title}>{lesson.title}</Text>
-              <Text style={styles.summary}>{lesson.summary}</Text>
+              <Text style={styles.kicker}>GRAMMAR NOTE · LEVEL {unit.level}</Text>
+              <Text style={styles.title}>{unit.title}</Text>
+              <Text style={styles.summary}>{unit.summary}</Text>
             </View>
           </SafeAreaView>
         </Gradient>

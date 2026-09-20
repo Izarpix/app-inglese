@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "App Inglese",
-    "slug": "app-inglese",
+    "name": "Inglesiamo",
+    "slug": "inglesiamo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "appinglese",
+    "scheme": "inglesiamo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

@@ -20,14 +20,15 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
         />
 
-        <title>App Inglese</title>
+        <title>Inglesiamo</title>
         <meta name="description" content="Impara l'inglese e prepara l'esame della magistrale." />
         <meta name="theme-color" content="#012169" />
+        <meta name="author" content="Izarpix Studio" />
 
         {/* Safari: "Aggiungi alla schermata Home" */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Inglese" />
+        <meta name="apple-mobile-web-app-title" content="Inglesiamo" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />

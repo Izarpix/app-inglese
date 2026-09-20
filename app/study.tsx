@@ -18,8 +18,7 @@ import { Gradient } from '@/components/london/gradient';
 import { RewardBadge } from '@/components/london/reward-badge';
 import { UnionJack } from '@/components/london/union-jack';
 import { Gradients, London, Radius } from '@/constants/london';
-import { allCards, getDeck, shuffle } from '@/src/content';
-import { lessonForTag } from '@/src/content/lessons';
+import { allCards, getUnit, shuffle, unitForTag } from '@/src/content';
 import type { Card, CardType } from '@/src/content/types';
 import { gradeAnswer, normalise, type Grade } from '@/src/domain/grading';
 import { play } from '@/src/audio/feedback';
@@ -35,6 +34,10 @@ const TYPE_LABEL: Record<CardType, string> = {
   rewrite: 'Say it in English',
   vocab: 'How do you say',
   choice: 'Pick the right form',
+  build: 'Build the sentence',
+  transform: 'Rewrite with the keyword',
+  box: 'Choose from the word box',
+  form: 'Form the right word',
 };
 
 const TYPE_ICON: Record<CardType, keyof typeof MaterialCommunityIcons.glyphMap> = {
@@ -43,14 +46,21 @@ const TYPE_ICON: Record<CardType, keyof typeof MaterialCommunityIcons.glyphMap> 
   rewrite: 'translate',
   vocab: 'book-alphabet',
   choice: 'format-list-bulleted',
+  build: 'hammer-wrench',
+  transform: 'swap-horizontal',
+  box: 'package-variant-closed',
+  form: 'alphabetical-variant',
 };
+
+/** Card types answered by tapping an option rather than typing. */
+const TAP_TYPES: CardType[] = ['choice', 'box'];
 
 export default function StudyScreen() {
   const router = useRouter();
   const { deckId, mode } = useLocalSearchParams<{ deckId?: string; mode?: string }>();
   const { answers, recordAnswer } = useAppState();
 
-  const deck = deckId ? getDeck(deckId) : undefined;
+  const deck = deckId ? getUnit(deckId) : undefined;
   const isReview = mode === 'review';
 
   /** Frozen at mount: a review session must not reshuffle as you answer it. */
@@ -167,6 +177,28 @@ export default function StudyScreen() {
 
           <View style={styles.promptCard}>
             <Text style={styles.prompt}>{card.prompt}</Text>
+
+            {card.keyword ? (
+              <View style={styles.cueRow}>
+                <Text style={styles.cueLabel}>KEYWORD</Text>
+                <View style={styles.cuePill}>
+                  <Text style={styles.cueText}>{card.keyword}</Text>
+                </View>
+              </View>
+            ) : null}
+
+            {card.root ? (
+              <View style={styles.cueRow}>
+                <Text style={styles.cueLabel}>ROOT WORD</Text>
+                <View style={styles.cuePill}>
+                  <Text style={styles.cueText}>{card.root}</Text>
+                </View>
+              </View>
+            ) : null}
+
+            {card.given ? (
+              <Text style={styles.given}>Start with: {card.given}...</Text>
+            ) : null}
             {card.hint && !answered ? (
               showHint ? (
                 <Text style={styles.hint}>{card.hint}</Text>
@@ -178,7 +210,7 @@ export default function StudyScreen() {
             ) : null}
           </View>
 
-          {card.type === 'choice' ? (
+          {TAP_TYPES.includes(card.type) ? (
             <View style={styles.options}>
               {(card.options ?? []).map((option) => (
                 <Pressable
@@ -227,7 +259,7 @@ export default function StudyScreen() {
               </Text>
               <MaterialCommunityIcons name="arrow-right" size={18} color={London.white} />
             </Pressable>
-          ) : card.type === 'choice' ? (
+          ) : TAP_TYPES.includes(card.type) ? (
             <Text style={styles.footerHint}>Tap the answer you think is right.</Text>
           ) : (
             <Pressable
@@ -249,7 +281,7 @@ export default function StudyScreen() {
 
 function Feedback({ card, grade, expected }: { card: Card; grade: Grade; expected: string }) {
   const router = useRouter();
-  const lesson = card.errorTags.map(lessonForTag).find(Boolean);
+  const lessonUnit = card.errorTags.map(unitForTag).find(Boolean);
   const palette = {
     correct: { bg: '#E6F4EE', border: London.park, icon: 'check-circle' as const, title: 'Correct' },
     almost: { bg: '#FDF3DA', border: London.gold, icon: 'alert-circle' as const, title: 'Almost, just a typo' },
@@ -282,12 +314,12 @@ function Feedback({ card, grade, expected }: { card: Card; grade: Grade; expecte
         ))}
       </View>
 
-      {lesson && grade !== 'correct' ? (
+      {lessonUnit && grade !== 'correct' ? (
         <Pressable
-          onPress={() => router.push({ pathname: '/lesson', params: { id: lesson.id } })}
+          onPress={() => router.push({ pathname: '/lesson', params: { id: lessonUnit.id } })}
           style={({ pressed }) => [styles.lessonLink, pressed && styles.pressed]}>
           <MaterialCommunityIcons name="book-open-variant" size={16} color={London.royal} />
-          <Text style={styles.lessonLinkText}>Review the rule: {lesson.title}</Text>
+          <Text style={styles.lessonLinkText}>Review the rule: {lessonUnit.title}</Text>
           <MaterialCommunityIcons name="chevron-right" size={18} color={London.royal} />
         </Pressable>
       ) : null}
@@ -436,6 +468,16 @@ const styles = StyleSheet.create({
   },
   prompt: { color: London.cab, fontSize: 21, lineHeight: 30, fontWeight: '600' },
   hint: { color: London.fog, fontSize: 13, lineHeight: 18 },
+  cueRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cueLabel: { color: London.fog, fontSize: 10, fontWeight: '800', letterSpacing: 0.8 },
+  cuePill: {
+    backgroundColor: London.gold,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  cueText: { color: London.royal, fontSize: 13, fontWeight: '900', letterSpacing: 0.5 },
+  given: { color: London.cab, fontSize: 14, fontStyle: 'italic' },
   hintLink: { color: London.tube, fontSize: 13, fontWeight: '700' },
 
   answerInput: {

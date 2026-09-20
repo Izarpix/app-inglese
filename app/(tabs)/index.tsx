@@ -18,33 +18,39 @@ import { PhoneBox } from '@/components/london/phone-box';
 import { Roundel } from '@/components/london/roundel';
 import { UnionJack } from '@/components/london/union-jack';
 import { Gradients, London, Radius } from '@/constants/london';
-import { allCards, decks } from '@/src/content';
-import { lessons } from '@/src/content/lessons';
+import { allCards, STAGES, unitsOf } from '@/src/content';
+import type { Stage } from '@/src/content/types';
 import { reviewSize } from '@/src/domain/review';
 import { useAppState } from '@/src/store/app-state';
 
-/** A different London icon per deck, so the list is recognisable at a glance. */
-const DECK_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
-  ppps: 'clock-time-four-outline',
-  ff: 'account-switch-outline',
-  esp: 'chart-line',
+/** One colour per stage, so the course reads as four blocks at a glance. */
+const STAGE_GRADIENT: Record<Stage, [string, string]> = {
+  foundations: Gradients.tube,
+  core: Gradients.royal,
+  esp: Gradients.park,
+  exam: Gradients.sunset,
 };
 
-const DECK_GRADIENTS: [string, string][] = [Gradients.tube, Gradients.sunset, Gradients.park];
+const STAGE_ICON: Record<Stage, keyof typeof MaterialCommunityIcons.glyphMap> = {
+  foundations: 'foot-print',
+  core: 'book-open-page-variant',
+  esp: 'chart-line',
+  exam: 'school',
+};
 
 export default function HomeScreen() {
   const router = useRouter();
   const { answers } = useAppState();
 
-  const studiedToday = answers.length;
-  const correctToday = answers.filter((a) => a.grade !== 'wrong').length;
-  const accuracy = studiedToday ? Math.round((correctToday / studiedToday) * 100) : 0;
+  const studied = answers.length;
+  const right = answers.filter((a) => a.grade !== 'wrong').length;
+  const accuracy = studied ? Math.round((right / studied) * 100) : 0;
   const toReview = reviewSize(answers, allCards, 10);
 
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Header studied={studiedToday} accuracy={accuracy} />
+        <Header studied={studied} accuracy={accuracy} />
 
         <View style={styles.body}>
           <TodayCard onPress={() => router.push('/study')} />
@@ -56,7 +62,7 @@ export default function HomeScreen() {
               <View style={styles.reviewIcon}>
                 <MaterialCommunityIcons name="refresh" size={22} color={London.white} />
               </View>
-              <View style={styles.deckText}>
+              <View style={styles.rowText}>
                 <Text style={styles.reviewTitle}>Review your mistakes</Text>
                 <Text style={styles.reviewMeta}>
                   {toReview} cards on the topics you got wrong
@@ -66,44 +72,48 @@ export default function HomeScreen() {
             </Pressable>
           ) : null}
 
-          <Text style={styles.sectionTitle}>Your decks</Text>
-          {decks.map((deck, index) => (
-            <Pressable
-              key={deck.id}
-              onPress={() => router.push({ pathname: '/study', params: { deckId: deck.id } })}
-              style={({ pressed }) => [styles.deck, pressed && styles.pressed]}>
-              <Gradient
-                colors={DECK_GRADIENTS[index % DECK_GRADIENTS.length]}
-                style={styles.deckIcon}>
-                <MaterialCommunityIcons
-                  name={DECK_ICONS[deck.id] ?? 'book-open-variant'}
-                  size={26}
-                  color={London.white}
-                />
-              </Gradient>
-              <View style={styles.deckText}>
-                <Text style={styles.deckTitle}>{deck.title}</Text>
-                <Text style={styles.deckMeta}>
-                  {deck.cards.length} cards · level {deck.level}
-                </Text>
+          {STAGES.map((stage) => (
+            <View key={stage.id} style={styles.stage}>
+              <View style={styles.stageHead}>
+                <Gradient colors={STAGE_GRADIENT[stage.id]} style={styles.stageIcon}>
+                  <MaterialCommunityIcons
+                    name={STAGE_ICON[stage.id]}
+                    size={18}
+                    color={London.white}
+                  />
+                </Gradient>
+                <View style={styles.rowText}>
+                  <Text style={styles.stageTitle}>{stage.title}</Text>
+                  <Text style={styles.stageSubtitle}>{stage.subtitle}</Text>
+                </View>
               </View>
-              <MaterialCommunityIcons name="chevron-right" size={22} color={London.fog} />
-            </Pressable>
-          ))}
 
-          <Text style={styles.sectionTitle}>Grammar notes</Text>
-          {lessons.map((lesson) => (
-            <Pressable
-              key={lesson.id}
-              onPress={() => router.push({ pathname: '/lesson', params: { id: lesson.id } })}
-              style={({ pressed }) => [styles.lesson, pressed && styles.pressed]}>
-              <MaterialCommunityIcons name="book-open-variant" size={19} color={London.royal} />
-              <View style={styles.deckText}>
-                <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                <Text style={styles.deckMeta}>{lesson.summary}</Text>
-              </View>
-              <MaterialCommunityIcons name="chevron-right" size={20} color={London.fog} />
-            </Pressable>
+              {unitsOf(stage.id).map((unit) => (
+                <View key={unit.id} style={styles.unit}>
+                  <Pressable
+                    onPress={() => router.push({ pathname: '/study', params: { deckId: unit.id } })}
+                    style={({ pressed }) => [styles.unitMain, pressed && styles.pressed]}>
+                    <View style={styles.rowText}>
+                      <Text style={styles.unitTitle}>{unit.title}</Text>
+                      <Text style={styles.unitMeta}>
+                        {unit.cards.length} cards · level {unit.level}
+                      </Text>
+                    </View>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => router.push({ pathname: '/lesson', params: { id: unit.id } })}
+                    hitSlop={6}
+                    style={({ pressed }) => [styles.noteButton, pressed && styles.pressed]}>
+                    <MaterialCommunityIcons
+                      name="book-open-variant"
+                      size={18}
+                      color={London.royal}
+                    />
+                    <Text style={styles.noteButtonText}>Note</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
           ))}
 
           <SuggestionBox />
@@ -122,15 +132,16 @@ function Header({ studied, accuracy }: { studied: number; accuracy: number }) {
           <View style={styles.headerTop}>
             <View style={{ flex: 1 }}>
               <Text style={styles.kicker}>MIND THE GAP</Text>
-              <Text style={styles.headerTitle}>Your English,{'\n'}one day at a time</Text>
+              <Text style={styles.headerTitle}>Inglesiamo</Text>
+              <Text style={styles.headerSub}>Your English, one day at a time</Text>
             </View>
-            <Roundel size={54} />
+            <Roundel size={50} />
           </View>
 
           <View style={styles.chips}>
-            <Chip icon="cards-outline" label="Today" value={`${studied}`} />
+            <Chip icon="cards-outline" label="Answers" value={`${studied}`} />
             <Chip icon="target" label="Accuracy" value={studied ? `${accuracy}%` : '--'} />
-            <Chip icon="fire" label="Streak" value="1" />
+            <Chip icon="cards-playing-outline" label="Cards" value={`${allCards.length}`} />
           </View>
         </View>
       </SafeAreaView>
@@ -164,7 +175,7 @@ function TodayCard({ onPress }: { onPress: () => void }) {
         <Text style={styles.todayKicker}>TODAY&apos;S SESSION</Text>
         <Text style={styles.todayTitle}>10 cards, five minutes</Text>
         <Text style={styles.todaySubtitle}>
-          Complete, correct, rewrite. All mixed, the way the exam asks.
+          Multiple choice, gap fill, transformation. All mixed, the way the exam asks.
         </Text>
         <Pressable onPress={onPress} style={({ pressed }) => [styles.cta, pressed && styles.pressed]}>
           <Text style={styles.ctaText}>Start</Text>
@@ -238,6 +249,8 @@ function SuggestionBox() {
           </Text>
         ) : null}
       </View>
+
+      <Text style={styles.credit}>Inglesiamo · by Izarpix Studio</Text>
     </KeyboardAvoidingView>
   );
 }
@@ -262,9 +275,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1.6,
-    marginBottom: 6,
+    marginBottom: 4,
   },
-  headerTitle: { color: London.white, fontSize: 27, fontWeight: '800', lineHeight: 33 },
+  headerTitle: { color: London.white, fontSize: 32, fontWeight: '900', letterSpacing: -0.5 },
+  headerSub: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginTop: 2 },
 
   chips: { flexDirection: 'row', gap: 10 },
   chip: {
@@ -279,6 +293,7 @@ const styles = StyleSheet.create({
   chipLabel: { color: 'rgba(255,255,255,0.75)', fontSize: 11, fontWeight: '600' },
 
   body: { paddingHorizontal: 20, paddingTop: 20, gap: 12 },
+  rowText: { flex: 1, gap: 3 },
 
   today: { borderRadius: Radius.xl, padding: 18, minHeight: 176, justifyContent: 'center' },
   todayPhoneBox: { position: 'absolute', right: 14, bottom: 0, opacity: 0.95 },
@@ -298,26 +313,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   ctaText: { color: London.flagRed, fontWeight: '800', fontSize: 15 },
-
-  sectionTitle: {
-    color: London.cab,
-    fontSize: 17,
-    fontWeight: '800',
-    marginTop: 14,
-    marginBottom: 2,
-  },
-
-  deck: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: London.white,
-    borderRadius: Radius.lg,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: London.line,
-  },
-  deckIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
 
   review: {
     flexDirection: 'row',
@@ -340,22 +335,42 @@ const styles = StyleSheet.create({
   reviewTitle: { color: London.flagRed, fontSize: 15, fontWeight: '800' },
   reviewMeta: { color: London.cab, fontSize: 12, lineHeight: 17 },
 
-  lesson: {
+  stage: { gap: 8, marginTop: 14 },
+  stageHead: { flexDirection: 'row', alignItems: 'center', gap: 11, marginBottom: 2 },
+  stageIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  stageTitle: { color: London.cab, fontSize: 17, fontWeight: '800' },
+  stageSubtitle: { color: London.fog, fontSize: 12 },
+
+  unit: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     backgroundColor: London.white,
     borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: London.line,
-    paddingVertical: 13,
-    paddingHorizontal: 14,
+    paddingLeft: 14,
+    paddingRight: 8,
   },
-  lessonTitle: { color: London.cab, fontSize: 14.5, fontWeight: '700' },
-  deckText: { flex: 1, gap: 3 },
-  deckTitle: { color: London.cab, fontSize: 15, fontWeight: '700' },
-  deckMeta: { color: London.fog, fontSize: 12 },
+  unitMain: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingVertical: 13 },
+  unitTitle: { color: London.cab, fontSize: 14.5, fontWeight: '700' },
+  unitMeta: { color: London.fog, fontSize: 12 },
+  noteButton: {
+    alignItems: 'center',
+    gap: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: Radius.sm,
+    backgroundColor: London.stone,
+  },
+  noteButtonText: { color: London.royal, fontSize: 10, fontWeight: '800' },
 
+  sectionTitle: {
+    color: London.cab,
+    fontSize: 17,
+    fontWeight: '800',
+    marginTop: 24,
+    marginBottom: 8,
+  },
   suggestCard: {
     backgroundColor: London.white,
     borderRadius: Radius.lg,
@@ -398,6 +413,14 @@ const styles = StyleSheet.create({
   suggestionAuthor: { color: London.tube, fontSize: 12, fontWeight: '800', marginBottom: 2 },
   suggestionText: { color: London.cab, fontSize: 14, lineHeight: 19 },
   suggestEmpty: { color: London.fog, fontSize: 12, lineHeight: 17 },
+
+  credit: {
+    textAlign: 'center',
+    color: London.fog,
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 22,
+  },
 
   pressed: { opacity: 0.8 },
 });

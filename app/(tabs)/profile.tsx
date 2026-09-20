@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gradient } from '@/components/london/gradient';
 import { PhoneBox } from '@/components/london/phone-box';
 import { Gradients, London, Radius } from '@/constants/london';
-import { allCards, decks } from '@/src/content';
+import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
 import { useAppState, type Profile } from '@/src/store/app-state';
 
@@ -92,8 +92,9 @@ export default function ProfileScreen() {
 
             <View style={styles.info}>
               <Row icon="cards-outline" label="Cards available" value={`${allCards.length}`} />
-              <Row icon="folder-outline" label="Decks" value={`${decks.length}`} />
+              <Row icon="folder-outline" label="Units" value={`${units.length}`} />
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
+              <Row icon="palette-outline" label="Studio" value="Izarpix Studio" />
               <Row icon="cellphone" label="Expo SDK" value={Constants.expoConfig?.sdkVersion ?? '--'} />
             </View>
 

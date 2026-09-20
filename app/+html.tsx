@@ -76,6 +76,26 @@ const css = `
     overflow: hidden;
   }
 
+  /*
+   * A solid bar behind the status bar.
+   *
+   * With apple-mobile-web-app-capable the page runs full screen and scrolls
+   * under the clock, so iOS puts a blur over that band to keep the time
+   * readable. Blurred content looked like a rendering fault. Painting the band
+   * in the app's own blue leaves iOS nothing to blur.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top, 0px);
+    background-color: #012169;
+    pointer-events: none;
+    z-index: 2147483647;
+  }
+
   * {
     -webkit-touch-callout: none;   /* no magnifier on long press */
     -webkit-tap-highlight-color: transparent;

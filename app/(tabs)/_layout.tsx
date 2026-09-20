@@ -4,12 +4,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { London } from '@/constants/london';
+import { useSafeBottom } from '@/src/hooks/use-safe-bottom';
 
 export default function TabLayout() {
-  // The web build has no safe area, so the labels would sit on the very edge of
-  // the screen; a minimum of 10 points keeps them off it everywhere.
+  // Two sources, because neither is right everywhere: the library is right in a
+  // normal browser and on the native build, the CSS probe is right for a web
+  // app launched from the iPhone home screen. The taller of the two is the one
+  // that actually clears the home indicator.
   const insets = useSafeAreaInsets();
-  const bottom = Math.max(insets.bottom, 10);
+  const cssBottom = useSafeBottom();
+  const bottom = Math.max(insets.bottom, cssBottom, 10);
 
   return (
     <Tabs

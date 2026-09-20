@@ -18,6 +18,7 @@ import { PhoneBox } from '@/components/london/phone-box';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
+import { pageBuildId } from '@/src/sync/auto-update';
 import { ensureSession, flush, pendingCount } from '@/src/sync/remote';
 import { useAppState, type Profile } from '@/src/store/app-state';
 
@@ -114,6 +115,7 @@ export default function ProfileScreen() {
               <Row icon="folder-outline" label="Units" value={`${units.length}`} />
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
               <Row icon="palette-outline" label="Made by" value="Izarpix" />
+              <Row icon="update" label="Build" value={pageBuildId() ?? 'dev'} />
               <Row
                 icon="cloud-check-outline"
                 label="Sync"

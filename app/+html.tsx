@@ -43,22 +43,27 @@ export default function Root({ children }: PropsWithChildren) {
 
 const css = `
   /*
-   * Full height on an iPhone in standalone mode.
+   * Full height on an iPhone added to the home screen.
    *
-   * "height: 100%" measures the window, which on iOS is not the screen: added
-   * to the home screen, the app ends up shorter than the display and leaves a
-   * dead strip under the tab bar. -webkit-fill-available fixes it on older iOS,
-   * 100dvh on newer, and the two together cover every iPhone.
+   * "height: 100%" measures the window, which on iOS is not the screen: the app
+   * ends up shorter than the display and leaves a dead strip under the tab bar.
+   * Pinning the body to all four edges with position: fixed is the one approach
+   * iOS cannot argue with, because there is no height to get wrong. 100dvh is
+   * kept as well for browsers where fixed positioning behaves differently.
    */
   html {
     height: 100%;
-    height: -webkit-fill-available;
     background-color: #012169;
   }
   body {
-    height: 100%;
-    height: -webkit-fill-available;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     margin: 0;
+    height: 100%;
+    height: 100dvh;
     overflow: hidden;              /* the app scrolls inside, not the page */
     overscroll-behavior: none;     /* no bounce, no pull-to-refresh */
     background-color: #F6F1E7;
@@ -68,9 +73,7 @@ const css = `
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-  @supports (height: 100dvh) {
-    html, body { height: 100dvh; }
+    overflow: hidden;
   }
 
   * {

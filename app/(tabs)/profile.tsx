@@ -113,7 +113,7 @@ export default function ProfileScreen() {
               <Row icon="cards-outline" label="Cards available" value={`${allCards.length}`} />
               <Row icon="folder-outline" label="Units" value={`${units.length}`} />
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
-              <Row icon="palette-outline" label="Studio" value="Izarpix Studio" />
+              <Row icon="palette-outline" label="Made by" value="Izarpix" />
               <Row
                 icon="cloud-check-outline"
                 label="Sync"

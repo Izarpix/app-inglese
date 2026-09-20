@@ -250,7 +250,7 @@ function SuggestionBox() {
         ) : null}
       </View>
 
-      <Text style={styles.credit}>Inglesiamo · by Izarpix Studio</Text>
+      <Text style={styles.credit}>Inglesiamo · by Izarpix</Text>
     </KeyboardAvoidingView>
   );
 }
@@ -260,10 +260,12 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: 40 },
 
   header: { paddingBottom: 22 },
+  // Kept clear of the status bar: iOS blurs whatever sits behind it, and a
+  // blurred flag looked like a rendering fault.
   headerFlag: {
     position: 'absolute',
     right: -70,
-    top: 10,
+    top: 64,
     opacity: 0.16,
     transform: [{ rotate: '-12deg' }],
     borderRadius: 8,

@@ -23,7 +23,7 @@ export default function Root({ children }: PropsWithChildren) {
         <title>Inglesiamo</title>
         <meta name="description" content="Impara l'inglese e prepara l'esame della magistrale." />
         <meta name="theme-color" content="#012169" />
-        <meta name="author" content="Izarpix Studio" />
+        <meta name="author" content="Izarpix" />
 
         {/* Safari: "Aggiungi alla schermata Home" */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -42,14 +42,37 @@ export default function Root({ children }: PropsWithChildren) {
 }
 
 const css = `
-  html, body, #root {
+  /*
+   * Full height on an iPhone in standalone mode.
+   *
+   * "height: 100%" measures the window, which on iOS is not the screen: added
+   * to the home screen, the app ends up shorter than the display and leaves a
+   * dead strip under the tab bar. -webkit-fill-available fixes it on older iOS,
+   * 100dvh on newer, and the two together cover every iPhone.
+   */
+  html {
     height: 100%;
-    background-color: #F6F1E7;
+    height: -webkit-fill-available;
+    background-color: #012169;
   }
   body {
-    overscroll-behavior: none;   /* no bounce, no pull-to-refresh */
+    height: 100%;
+    height: -webkit-fill-available;
+    margin: 0;
+    overflow: hidden;              /* the app scrolls inside, not the page */
+    overscroll-behavior: none;     /* no bounce, no pull-to-refresh */
+    background-color: #F6F1E7;
     -webkit-text-size-adjust: 100%;
   }
+  #root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  @supports (height: 100dvh) {
+    html, body { height: 100dvh; }
+  }
+
   * {
     -webkit-touch-callout: none;   /* no magnifier on long press */
     -webkit-tap-highlight-color: transparent;

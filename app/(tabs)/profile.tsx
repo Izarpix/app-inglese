@@ -18,6 +18,7 @@ import { PhoneBox } from '@/components/london/phone-box';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
+import { useSafeBottom } from '@/src/hooks/use-safe-bottom';
 import { pageBuildId } from '@/src/sync/auto-update';
 import { ensureSession, flush, pendingCount } from '@/src/sync/remote';
 import { useAppState, type Profile } from '@/src/store/app-state';
@@ -34,6 +35,9 @@ export default function ProfileScreen() {
   const unlocked = computeRewards(answers).filter(isUnlocked).length;
   const [account, setAccount] = useState<string | null>(null);
   const [pending, setPending] = useState(0);
+  // Temporary readout: tells us what iOS reports for the home indicator area,
+  // which is what the tab bar has to cover. Remove once the layout is settled.
+  const safeBottom = useSafeBottom();
 
   // Opening this screen is a good moment to retry anything still waiting.
   useEffect(() => {
@@ -116,6 +120,7 @@ export default function ProfileScreen() {
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
               <Row icon="palette-outline" label="Made by" value="Izarpix" />
               <Row icon="update" label="Build" value={pageBuildId() ?? 'dev'} />
+              <Row icon="arrow-collapse-down" label="Safe area" value={`${Math.round(safeBottom)} pt`} />
               <Row
                 icon="cloud-check-outline"
                 label="Sync"

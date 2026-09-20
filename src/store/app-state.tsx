@@ -10,6 +10,7 @@ import {
 
 import type { ErrorTag } from '@/src/content/types';
 import type { Grade } from '@/src/domain/grading';
+import { flush, pushProfile, queueAnswer, queueSuggestion } from '@/src/sync/remote';
 import { deviceId, load, save } from './storage';
 
 const KEYS = {
@@ -74,22 +75,40 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => save(KEYS.profile, profile), [profile]);
+  // On opening: send anything left over, and make sure the profile row exists
+  // so this learner shows up by name in the owner's queries from the start.
+  useEffect(() => {
+    void (async () => {
+      await flush();
+      await pushProfile(load<Profile>(KEYS.profile, { name: '', level: 'B2', dailyGoal: 10 }));
+    })();
+  }, []);
   useEffect(() => save(KEYS.answers, answers), [answers]);
   useEffect(() => save(KEYS.suggestions, suggestions), [suggestions]);
 
   const setProfile = useCallback((patch: Partial<Profile>) => {
-    setProfileState((current) => ({ ...current, ...patch }));
+    setProfileState((current) => {
+      const next = { ...current, ...patch };
+      void pushProfile(next);
+      return next;
+    });
   }, []);
 
   const recordAnswer = useCallback((record: Omit<AnswerRecord, 'at'>) => {
-    setAnswers((current) => [...current, { ...record, at: Date.now() }]);
+    const full: AnswerRecord = { ...record, at: Date.now() };
+    setAnswers((current) => [...current, full]);
+    queueAnswer(full, record.deckId);
   }, []);
 
   const addSuggestion = useCallback((author: string, text: string) => {
-    setSuggestions((current) => [
-      { id: `${Date.now()}`, author: author.trim() || 'Anonymous', text: text.trim(), at: Date.now() },
-      ...current,
-    ]);
+    const entry: Suggestion = {
+      id: `${Date.now()}`,
+      author: author.trim() || 'Anonymous',
+      text: text.trim(),
+      at: Date.now(),
+    };
+    setSuggestions((current) => [entry, ...current]);
+    queueSuggestion(entry);
   }, []);
 
   const removeSuggestion = useCallback((id: string) => {

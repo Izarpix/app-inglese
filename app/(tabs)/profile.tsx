@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +18,7 @@ import { PhoneBox } from '@/components/london/phone-box';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
+import { ensureSession, flush, pendingCount } from '@/src/sync/remote';
 import { useAppState, type Profile } from '@/src/store/app-state';
 
 const LEVELS: Profile['level'][] = ['B1', 'B2', 'C1'];
@@ -29,6 +31,23 @@ const GOALS = [5, 10, 20, 30];
 export default function ProfileScreen() {
   const { profile, setProfile, answers } = useAppState();
   const unlocked = computeRewards(answers).filter(isUnlocked).length;
+  const [account, setAccount] = useState<string | null>(null);
+  const [pending, setPending] = useState(0);
+
+  // Opening this screen is a good moment to retry anything still waiting.
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      await flush();
+      const id = await ensureSession();
+      if (!alive) return;
+      setAccount(id);
+      setPending(pendingCount());
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [answers.length]);
 
   return (
     <View style={styles.root}>
@@ -95,14 +114,20 @@ export default function ProfileScreen() {
               <Row icon="folder-outline" label="Units" value={`${units.length}`} />
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
               <Row icon="palette-outline" label="Studio" value="Izarpix Studio" />
+              <Row
+                icon="cloud-check-outline"
+                label="Sync"
+                value={account ? (pending ? `${pending} waiting` : 'Up to date') : 'Offline'}
+              />
               <Row icon="cellphone" label="Expo SDK" value={Constants.expoConfig?.sdkVersion ?? '--'} />
             </View>
 
             <View style={styles.notice}>
               <MaterialCommunityIcons name="information-outline" size={18} color={London.tube} />
               <Text style={styles.noticeText}>
-                Name, progress and feedback are saved on this device and survive closing the
-                app. The next step is an account, so you find them on any phone.
+                Everything is saved on this device first, then sent to the cloud when there is a
+                connection. Your scores and your feedback reach the app&apos;s author; nothing else
+                is collected, and no email address is ever asked for.
               </Text>
             </View>
           </View>

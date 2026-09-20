@@ -42,6 +42,33 @@ export function save(key: string, value: unknown): void {
   }
 }
 
+/** Raw string access, for libraries that want to manage their own encoding. */
+export function loadRaw(key: string): string | null {
+  try {
+    return browserStorage()?.getItem(key) ?? memory.get(key) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveRaw(key: string, value: string): void {
+  try {
+    memory.set(key, value);
+    browserStorage()?.setItem(key, value);
+  } catch {
+    // out of quota or private mode
+  }
+}
+
+export function removeRaw(key: string): void {
+  try {
+    memory.delete(key);
+    browserStorage()?.removeItem(key);
+  } catch {
+    // nothing to do
+  }
+}
+
 /**
  * A stable id for this installation, created the first time the app runs.
  * It is how the scores of each friend will be told apart once there is a

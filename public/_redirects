@@ -1,0 +1,3 @@
+# Existing files are served first; this only catches routes with no file of
+# their own, so the app never shows a 404 on a deep link.
+/*    /index.html   200

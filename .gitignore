@@ -69,3 +69,7 @@ expo-env.d.ts
 # Materiale universitario protetto da copyright — mai su GitHub.
 # ---------------------------------------------------------------
 inglese magistrale/
+inglesiamo-dist.zip
+
+# generato a ogni build: cambia sempre, non ha senso versionarlo
+public/version.json

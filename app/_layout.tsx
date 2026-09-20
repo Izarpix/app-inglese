@@ -1,10 +1,12 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { London } from '@/constants/london';
 import { AppStateProvider } from '@/src/store/app-state';
+import { startAutoUpdate } from '@/src/sync/auto-update';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -27,6 +29,9 @@ const AppTheme = {
 };
 
 export default function RootLayout() {
+  // On the web the app reloads itself when a new version is deployed.
+  useEffect(() => startAutoUpdate(), []);
+
   return (
     <AppStateProvider>
       <ThemeProvider value={AppTheme}>

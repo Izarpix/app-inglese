@@ -1,53 +1,173 @@
-import { StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Screen } from '@/components/screen';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Gradient } from '@/components/london/gradient';
+import { UnionJack } from '@/components/london/union-jack';
+import { Gradients, London, Radius } from '@/constants/london';
+import { allCards } from '@/src/content';
+import { lessonForTag } from '@/src/content/lessons';
+import { useAppState, weakestTags } from '@/src/store/app-state';
+
+/** Human wording for the error categories, so the screen is readable in Italian. */
+const TAG_LABEL: Record<string, string> = {
+  'present-perfect-vs-past-simple': 'Present perfect vs past simple',
+  'time-adverbial': 'Espressioni di tempo (yesterday, ago, yet)',
+  'for-since': 'For e since',
+  'state-verbs': 'Verbi di stato',
+  'irregular-verb': 'Verbi irregolari',
+  'been-vs-gone': 'Been o gone',
+  'question-form': 'Forma interrogativa',
+  'negative-form': 'Forma negativa',
+  'false-friend': 'Falsi amici',
+  preposition: 'Preposizioni',
+  article: 'Articoli',
+};
 
 export default function ProgressScreen() {
-  return (
-    <Screen title="Progressi" subtitle="Come stai andando">
-      <ThemedView style={styles.row}>
-        <Stat label="Giorni di fila" value="0" />
-        <Stat label="Card studiate" value="0" />
-        <Stat label="Da ripassare" value="0" />
-      </ThemedView>
+  const router = useRouter();
+  const { answers } = useAppState();
 
-      <ThemedText style={styles.muted}>
-        I numeri sono segnaposto: diventeranno reali quando esisterà il database.
-      </ThemedText>
-    </Screen>
+  const total = answers.length;
+  const right = answers.filter((a) => a.grade === 'correct').length;
+  const almost = answers.filter((a) => a.grade === 'almost').length;
+  const accuracy = total ? Math.round(((right + almost) / total) * 100) : 0;
+  const seen = new Set(answers.map((a) => a.cardId)).size;
+  const weak = weakestTags(answers).slice(0, 5);
+
+  return (
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Gradient colors={Gradients.tube} style={styles.header}>
+          <UnionJack width={220} style={styles.flag} />
+          <SafeAreaView edges={['top']}>
+            <View style={styles.headerContent}>
+              <Text style={styles.kicker}>HOW YOU ARE DOING</Text>
+              <Text style={styles.title}>Progress</Text>
+              <View style={styles.stats}>
+                <Stat value={`${total}`} label="Answers" />
+                <Stat value={total ? `${accuracy}%` : '--'} label="Accuracy" />
+                <Stat value={`${seen}/${allCards.length}`} label="Cards seen" />
+              </View>
+            </View>
+          </SafeAreaView>
+        </Gradient>
+
+        <View style={styles.body}>
+          <Text style={styles.sectionTitle}>Where you slip most</Text>
+          <View style={styles.card}>
+            {weak.length === 0 ? (
+              <Text style={styles.empty}>
+                No mistakes recorded yet. Do a session and your profile appears here: the app
+                uses these categories to decide what to push you on.
+              </Text>
+            ) : (
+              weak.map((item) => {
+                const lesson = lessonForTag(item.tag);
+                return (
+                  <Pressable
+                    key={item.tag}
+                    disabled={!lesson}
+                    onPress={() =>
+                      lesson && router.push({ pathname: '/lesson', params: { id: lesson.id } })
+                    }
+                    style={styles.weakRow}>
+                    <MaterialCommunityIcons
+                      name="alert-circle-outline"
+                      size={18}
+                      color={London.flagRed}
+                    />
+                    <View style={styles.weakTextBox}>
+                      <Text style={styles.weakLabel}>{TAG_LABEL[item.tag] ?? item.tag}</Text>
+                      {lesson ? (
+                        <Text style={styles.weakLink}>Tap to review the rule</Text>
+                      ) : null}
+                    </View>
+                    <View style={styles.missPill}>
+                      <Text style={styles.missText}>{item.misses}</Text>
+                    </View>
+                  </Pressable>
+                );
+              })
+            )}
+          </View>
+
+          <View style={styles.warning}>
+            <MaterialCommunityIcons name="information-outline" size={18} color={London.tube} />
+            <Text style={styles.warningText}>
+              Your progress is saved on this device. An account, so you find it anywhere, is
+              the next block of work.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <ThemedView style={styles.stat}>
-      <ThemedText type="title">{value}</ThemedText>
-      <ThemedText style={styles.statLabel}>{label}</ThemedText>
-    </ThemedView>
+    <View style={styles.stat}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    gap: 12,
+  root: { flex: 1, backgroundColor: London.stone },
+  scroll: { paddingBottom: 40 },
+  header: { paddingBottom: 24 },
+  flag: {
+    position: 'absolute',
+    right: -50,
+    bottom: -20,
+    opacity: 0.15,
+    transform: [{ rotate: '10deg' }],
   },
+  headerContent: { paddingHorizontal: 20, paddingTop: 14, gap: 4 },
+  kicker: { color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
+  title: { color: London.white, fontSize: 32, fontWeight: '900', marginBottom: 12 },
+  stats: { flexDirection: 'row', gap: 10 },
   stat: {
     flex: 1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#8884',
-    borderRadius: 12,
-    padding: 12,
-    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    borderRadius: Radius.md,
+    paddingVertical: 12,
+    alignItems: 'center',
+    gap: 2,
   },
-  statLabel: {
-    fontSize: 13,
-    lineHeight: 18,
-    opacity: 0.6,
+  statValue: { color: London.white, fontSize: 19, fontWeight: '900' },
+  statLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '600' },
+  body: { padding: 20, gap: 12 },
+  sectionTitle: { color: London.cab, fontSize: 17, fontWeight: '800' },
+  card: {
+    backgroundColor: London.white,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: London.line,
+    padding: 16,
+    gap: 12,
   },
-  muted: {
-    opacity: 0.6,
+  empty: { color: London.fog, fontSize: 13.5, lineHeight: 20 },
+  weakRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  weakTextBox: { flex: 1, gap: 2 },
+  weakLabel: { color: London.cab, fontSize: 14, fontWeight: '600' },
+  weakLink: { color: London.tube, fontSize: 11.5, fontWeight: '700' },
+  missPill: {
+    backgroundColor: '#FBE9EB',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
+  missText: { color: London.flagRed, fontSize: 12, fontWeight: '800' },
+  warning: {
+    flexDirection: 'row',
+    gap: 10,
+    backgroundColor: 'rgba(0,25,168,0.06)',
+    borderRadius: Radius.md,
+    padding: 14,
+  },
+  warningText: { flex: 1, color: London.cab, fontSize: 12.5, lineHeight: 18 },
 });

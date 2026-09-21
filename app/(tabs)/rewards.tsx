@@ -85,7 +85,7 @@ export default function RewardsScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
-  scroll: { paddingBottom: 40 },
+  scroll: { paddingBottom: 130 },
   header: {
     paddingBottom: 26,
     borderBottomLeftRadius: Radius.xl,

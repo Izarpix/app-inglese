@@ -17,12 +17,10 @@ export default function TabLayout() {
   const cssBottom = useSafeBottom();
   const needed = Math.max(insets.bottom, cssBottom, 10);
 
-  // ...minus the screen the page never got. Those points are already white and
-  // already below the bar: paying the inset on top of them lifts the icons a
-  // centimetre off the bottom of the screen. See useDeadBottom.
+  // iOS standalone can make the layout viewport shorter than the display. The
+  // bar stays in the layout but is painted down through that missing distance,
+  // exactly like the floating navigation shown in the reference app.
   const dead = useDeadBottom();
-  const bottom = Math.max(needed - dead, 0);
-
   return (
     <Tabs
       screenOptions={{
@@ -30,16 +28,23 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarActiveTintColor: London.royal,
         tabBarInactiveTintColor: London.fog,
-        // The dock's white surface continues into Safari's unreachable bottom
-        // strip; icon padding still pays only the real usable safe area.
+        // The pill floats over the page, as in a native app. On iPhone Home
+        // Screen, WebKit makes the layout viewport shorter than the display;
+        // translating by `dead` paints the pill into that extra area while the
+        // `bottom` value still keeps it clear of the home indicator.
         tabBarBackground: () => <TabBarPill />,
         tabBarStyle: {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
-          height: 70 + bottom,
+          position: 'absolute',
+          left: 14,
+          right: 14,
+          bottom: needed,
+          height: 70,
           paddingTop: 6,
-          paddingBottom: 6 + bottom,
+          paddingBottom: 6,
+          transform: [{ translateY: dead }],
         },
         // Without an explicit line height the web build squeezes the label to a
         // few pixels and clips it; flexShrink keeps it from being compressed.

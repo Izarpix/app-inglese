@@ -62,15 +62,13 @@ export function useSafeBottom(fallback = 8): number {
  * The points of screen the page does not have.
  *
  * Measured on an iPhone 16 Pro with the app on the home screen: the screen is
- * 874 pt and the window iOS hands the page can be 812 pt. In the configuration
- * where iOS has already placed the page below the status bar, those missing 62
- * pt are at the TOP even though WebKit can also expose them through the bottom
- * safe-area value.
+ * taller than the layout viewport WebKit gives the page. When the page runs
+ * underneath the clock (top inset > 0), the missing points are below that
+ * viewport even though children are still allowed to paint into them.
  *
- * Paying that value again at the bottom makes the tab bar about 62 pt too tall:
- * the icons float above a large empty white area. Whoever pays a bottom inset
- * therefore subtracts the part of the screen that iOS already reserved at the
- * top.
+ * The floating tab bar uses this distance as a visual translation: its layout
+ * remains inside the page, while the pill is painted down into the otherwise
+ * empty area. This is the same pattern used by the other installed web app.
  *
  * Zero everywhere else: in a browser tab, on the phone build, in landscape.
  */
@@ -91,16 +89,14 @@ export function useDeadBottom(): number {
       }
       // screen.height does not follow the rotation on iOS, hence the portrait check
       const missing = window.screen.height - window.innerHeight;
-      if (!(missing > 0 && missing < 120)) {
+      if (!(missing > 0 && missing < 180)) {
         setDead(0);
         return;
       }
       /*
-       * Where the missing points are depends on where the page starts, and the
-       * top inset tells us. If it is zero, iOS has already placed the viewport
-       * below the status bar: `missing` is therefore a top reservation and must
-       * not inflate the bottom navigation. If it is positive, the page runs
-       * under the clock and that missing height must not be cancelled here.
+       * Only compensate when the page really runs under the status bar. If iOS
+       * has already placed the viewport below it (top inset 0), `missing` also
+       * includes that top reservation and is not a bottom gap.
        */
       const probe = document.createElement('div');
       probe.style.cssText =
@@ -108,7 +104,7 @@ export function useDeadBottom(): number {
       document.body.appendChild(probe);
       const top = probe.getBoundingClientRect().height;
       probe.remove();
-      setDead(top === 0 ? missing : 0);
+      setDead(top > 0 ? missing : 0);
     };
 
     measure();

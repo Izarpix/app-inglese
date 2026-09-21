@@ -65,7 +65,7 @@ const css = `
    */
   html {
     height: 100%;
-    background-color: #FFFFFF;
+    background-color: #F6F3EC;
   }
   body {
     position: fixed;
@@ -79,10 +79,10 @@ const css = `
     overscroll-behavior: none;     /* no bounce, no pull-to-refresh */
     /*
      * iOS can leave a strip outside the standalone web app's layout viewport.
-     * No element can occupy it, so Safari paints this body colour there. White
-     * deliberately matches the bottom navigation dock.
+     * Match the page canvas so it reads as a continuation of the content behind
+     * the floating navigation rather than as part of the tab bar.
      */
-    background-color: #FFFFFF;
+    background-color: #F6F3EC;
     -webkit-text-size-adjust: 100%;
   }
   /*

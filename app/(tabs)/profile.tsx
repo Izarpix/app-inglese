@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
-import { PhoneBox } from '@/components/london/phone-box';
+import { LondonHeroArt } from '@/components/london/hero-art';
 import { SafeTop } from '@/components/safe-top';
-import { Gradients, London, Radius } from '@/constants/london';
+import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
 import { useAppState, type Profile } from '@/src/store/app-state';
@@ -58,7 +58,7 @@ export default function ProfileScreen() {
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <SafeTop>
             <Gradient colors={Gradients.royal} style={styles.header}>
-              <PhoneBox height={118} style={styles.phoneBox} />
+              <LondonHeroArt variant="profile" style={styles.headerArt} />
               <View style={styles.headerContent}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
@@ -74,6 +74,7 @@ export default function ProfileScreen() {
           </SafeTop>
 
           <View style={styles.body}>
+            <Text style={styles.sectionKicker}>TRAVEL CARD DETAILS</Text>
             <Text style={styles.label}>Your name</Text>
             <TextInput
               value={profile.name}
@@ -112,6 +113,7 @@ export default function ProfileScreen() {
               ))}
             </View>
 
+            <Text style={styles.sectionKicker}>APP INFORMATION</Text>
             <View style={styles.info}>
               <Row icon="cards-outline" label="Cards available" value={`${allCards.length}`} />
               <Row icon="folder-outline" label="Units" value={`${units.length}`} />
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  phoneBox: { position: 'absolute', right: 18, bottom: -6, opacity: 0.55 },
+  headerArt: { position: 'absolute', width: '74%', height: 224, right: -20, top: -12, opacity: 0.68 },
   headerContent: { paddingHorizontal: 20, paddingTop: 16, gap: 6 },
   avatar: {
     width: 62,
@@ -177,11 +179,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
+    borderWidth: 4,
+    borderColor: 'rgba(255,255,255,0.22)',
   },
   avatarText: { color: London.royal, fontSize: 27, fontWeight: '900' },
   name: { color: London.white, fontSize: 27, fontWeight: '900' },
   subtitle: { color: 'rgba(255,255,255,0.85)', fontSize: 13.5, fontWeight: '600' },
   body: { padding: 20, gap: 8 },
+  sectionKicker: { color: London.flagRed, fontSize: 10, fontWeight: '900', letterSpacing: 1.4, marginTop: 14, marginBottom: 2 },
   label: { color: London.cab, fontSize: 13, fontWeight: '800', marginTop: 12 },
   input: {
     backgroundColor: London.white,
@@ -192,6 +197,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     fontSize: 16,
     color: London.cab,
+    ...Shadows.card,
   },
   pills: { flexDirection: 'row', gap: 8 },
   pill: {
@@ -207,13 +213,14 @@ const styles = StyleSheet.create({
   pillText: { color: London.cab, fontSize: 15, fontWeight: '700' },
   pillTextActive: { color: London.white },
   info: {
-    marginTop: 18,
+    marginTop: 2,
     backgroundColor: London.white,
     borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: London.line,
     paddingHorizontal: 14,
     paddingVertical: 4,
+    ...Shadows.card,
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11 },
   rowLabel: { flex: 1, color: London.cab, fontSize: 14 },

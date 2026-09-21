@@ -22,7 +22,7 @@ export default function Root({ children }: PropsWithChildren) {
 
         <title>Inglesiamo</title>
         <meta name="description" content="Impara l'inglese e prepara l'esame della magistrale." />
-        <meta name="theme-color" content="#012169" />
+        <meta name="theme-color" content="#102A43" />
         <meta name="author" content="Izarpix" />
 
         {/* Safari: "Aggiungi alla schermata Home" */}
@@ -65,7 +65,7 @@ const css = `
    */
   html {
     height: 100%;
-    background-color: #F6F1E7;
+    background-color: #F6F3EC;
   }
   body {
     position: fixed;
@@ -84,7 +84,7 @@ const css = `
      * (components/tab-bar-pill.tsx) the band has to be the colour of the page
      * instead, so it reads as the margin around the bar.
      */
-    background-color: #F6F1E7;
+    background-color: #F6F3EC;
     -webkit-text-size-adjust: 100%;
   }
   /*
@@ -100,10 +100,11 @@ const css = `
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: #F6F1E7;
+    background-color: #F6F3EC;
   }
 
   * {
+    box-sizing: border-box;
     -webkit-touch-callout: none;   /* no magnifier on long press */
     -webkit-tap-highlight-color: transparent;
   }
@@ -111,5 +112,8 @@ const css = `
     -webkit-user-select: text;
     user-select: text;
     font-size: 16px;   /* under 16px iOS zooms the page when the field is focused */
+  }
+  button, [role="button"] {
+    touch-action: manipulation;
   }
 `;

@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/haptic-tab';
@@ -27,7 +28,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: London.flagRed,
+        tabBarActiveTintColor: London.royal,
         tabBarInactiveTintColor: London.fog,
         /*
          * A floating bar, not a bar glued to the bottom. On the iPhone the page
@@ -47,7 +48,7 @@ export default function TabLayout() {
         },
         // Without an explicit line height the web build squeezes the label to a
         // few pixels and clips it; flexShrink keeps it from being compressed.
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '700', lineHeight: 15, flexShrink: 0, marginTop: 3 },
+        tabBarLabelStyle: { fontSize: 10.5, fontWeight: '700', lineHeight: 15, flexShrink: 0, marginTop: 2 },
         tabBarIconStyle: { flexShrink: 0 },
         /*
          * Centred, and said out loud. The button's own default is to stack icon
@@ -66,38 +67,43 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Study',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="cards" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => <TabIcon name="cards" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: 'Progress',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chart-box" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => <TabIcon name="chart-box" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="rewards"
         options={{
           title: 'Rewards',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="trophy" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => <TabIcon name="trophy" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account-circle" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => <TabIcon name="account-circle" color={color} focused={focused} />,
         }}
       />
     </Tabs>
   );
 }
+
+function TabIcon({ name, color, focused }: { name: keyof typeof MaterialCommunityIcons.glyphMap; color: string; focused: boolean }) {
+  return (
+    <View style={[styles.icon, focused && styles.iconFocused]}>
+      <MaterialCommunityIcons name={name} size={focused ? 21 : 22} color={focused ? London.white : color} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  icon: { width: 34, height: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },
+  iconFocused: { backgroundColor: London.royal },
+});

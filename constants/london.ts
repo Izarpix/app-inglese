@@ -4,39 +4,60 @@
  */
 export const London = {
   /** Union Jack / Royal Navy blue — headers and primary surfaces. */
-  royal: '#012169',
+  royal: '#102A43',
   /** Union Jack red — the accent that carries the brand. */
-  flagRed: '#C8102E',
+  flagRed: '#D64545',
   /** K6 telephone box and pillar box red — warmer, used for the graphics. */
-  phoneBox: '#D8232A',
+  phoneBox: '#C9363E',
   /** London Underground roundel blue. */
-  tube: '#0019A8',
+  tube: '#2457C5',
   /** Routemaster bus red. */
-  bus: '#DA291C',
+  bus: '#D64545',
   /** Royal Parks green — the "correct answer" colour. */
-  park: '#1B7F5C',
+  park: '#24856A',
   /** Crown gold — highlights, streaks, rewards. */
-  gold: '#F2B705',
+  gold: '#F2C14E',
   /** Portland stone — the page background. */
-  stone: '#F6F1E7',
+  stone: '#F6F3EC',
   /** Slightly deeper stone for cards sitting on stone. */
-  stoneDeep: '#EDE5D6',
+  stoneDeep: '#ECE6DA',
   /** Black cab — primary text. */
-  cab: '#1A1A1A',
+  cab: '#17212B',
   /** Thames fog — secondary text. */
-  fog: '#6B7280',
+  fog: '#687481',
   /** Hairlines and dividers. */
-  line: '#DCD3C2',
+  line: '#DDD7CB',
+  /** Pale blue used for selected and informational surfaces. */
+  sky: '#EAF0FA',
+  /** Pale red used for review and error surfaces. */
+  blush: '#FBEDEE',
   white: '#FFFFFF',
 } as const;
 
 /** Colour pairs used for the soft gradients behind headers and deck cards. */
 export const Gradients = {
-  royal: ['#012169', '#1B3FA0'] as [string, string],
-  sunset: ['#C8102E', '#F2B705'] as [string, string],
-  tube: ['#0019A8', '#00A3E0'] as [string, string],
-  park: ['#1B7F5C', '#7FB800'] as [string, string],
-  fog: ['#4B5A6B', '#8FA3B8'] as [string, string],
+  royal: ['#102A43', '#244B6D'] as [string, string],
+  sunset: ['#D64545', '#A82637'] as [string, string],
+  tube: ['#2457C5', '#3978D4'] as [string, string],
+  park: ['#24856A', '#3E9D78'] as [string, string],
+  fog: ['#536778', '#7E91A0'] as [string, string],
 };
 
-export const Radius = { sm: 10, md: 16, lg: 22, xl: 28 } as const;
+export const Radius = { sm: 10, md: 14, lg: 20, xl: 28 } as const;
+
+export const Shadows = {
+  card: {
+    shadowColor: '#102A43',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.07,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  raised: {
+    shadowColor: '#102A43',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.14,
+    shadowRadius: 22,
+    elevation: 7,
+  },
+} as const;

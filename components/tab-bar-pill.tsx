@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { London, Radius } from '@/constants/london';
+import { London, Radius, Shadows } from '@/constants/london';
 
 /**
  * The white rounded shape behind the tab bar.
@@ -30,10 +30,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: London.line,
     // soft lift, so the pill reads as sitting above the page
-    shadowColor: '#2B2419',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
+    ...Shadows.raised,
   },
 });

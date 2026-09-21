@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -13,11 +14,9 @@ import {
 } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
-import { PhoneBox } from '@/components/london/phone-box';
-import { Roundel } from '@/components/london/roundel';
-import { UnionJack } from '@/components/london/union-jack';
+import { CityLines } from '@/components/london/city-lines';
 import { SafeTop } from '@/components/safe-top';
-import { Gradients, London, Radius } from '@/constants/london';
+import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { allCards, STAGES, unitsOf } from '@/src/content';
 import type { Stage } from '@/src/content/types';
 import { reviewSize } from '@/src/domain/review';
@@ -88,15 +87,21 @@ export default function HomeScreen() {
                 </View>
               </View>
 
-              {unitsOf(stage.id).map((unit) => (
+              {unitsOf(stage.id).map((unit, unitIndex) => (
                 <View key={unit.id} style={styles.unit}>
+                  <View style={styles.routeRail}>
+                    <View style={[styles.routeDot, { borderColor: STAGE_GRADIENT[stage.id][0] }]} />
+                    {unitIndex < unitsOf(stage.id).length - 1 ? (
+                      <View style={[styles.routeLine, { backgroundColor: STAGE_GRADIENT[stage.id][0] }]} />
+                    ) : null}
+                  </View>
                   <Pressable
                     onPress={() => router.push({ pathname: '/study', params: { deckId: unit.id } })}
                     style={({ pressed }) => [styles.unitMain, pressed && styles.pressed]}>
                     <View style={styles.rowText}>
                       <Text style={styles.unitTitle}>{unit.title}</Text>
                       <Text style={styles.unitMeta}>
-                        {unit.cards.length} cards · level {unit.level}
+                        Platform {unitIndex + 1} · {unit.cards.length} cards · {unit.level}
                       </Text>
                     </View>
                   </Pressable>
@@ -111,6 +116,7 @@ export default function HomeScreen() {
                     />
                     <Text style={styles.noteButtonText}>Note</Text>
                   </Pressable>
+                  <MaterialCommunityIcons name="chevron-right" size={19} color={London.line} />
                 </View>
               ))}
             </View>
@@ -127,15 +133,24 @@ function Header({ studied, accuracy }: { studied: number; accuracy: number }) {
   return (
     <SafeTop>
       <Gradient colors={Gradients.royal} style={styles.header}>
-        <UnionJack width={260} style={styles.headerFlag} />
+        <View style={styles.headerGlow} />
+        <Image
+          source={require('@/assets/images/london-hero.png')}
+          contentFit="contain"
+          contentPosition="right bottom"
+          priority="high"
+          style={styles.headerArtwork}
+        />
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.kicker}>MIND THE GAP</Text>
+              <View style={styles.brandPill}>
+                <View style={styles.brandDot} />
+                <Text style={styles.brandPillText}>LONDON ENGLISH</Text>
+              </View>
               <Text style={styles.headerTitle}>Inglesiamo</Text>
-              <Text style={styles.headerSub}>Your English, one day at a time</Text>
+              <Text style={styles.headerSub}>English that takes you places.</Text>
             </View>
-            <Roundel size={50} />
           </View>
 
           <View style={styles.chips}>
@@ -169,20 +184,30 @@ function Chip({
 
 function TodayCard({ onPress }: { onPress: () => void }) {
   return (
-    <Gradient colors={Gradients.sunset} style={styles.today}>
-      <PhoneBox height={150} style={styles.todayPhoneBox} />
+    <View style={styles.today}>
+      <View style={styles.todayArt}>
+        <CityLines style={styles.todayLines} />
+        <Image
+          source={require('@/assets/images/session-phone-box.png')}
+          contentFit="contain"
+          style={styles.todayPhoneBox}
+        />
+      </View>
       <View style={styles.todayText}>
-        <Text style={styles.todayKicker}>TODAY&apos;S SESSION</Text>
+        <View style={styles.todayRoute}>
+          <View style={styles.todayRouteDot} />
+          <Text style={styles.todayKicker}>NEXT DEPARTURE · 5 MIN</Text>
+        </View>
         <Text style={styles.todayTitle}>10 cards, five minutes</Text>
         <Text style={styles.todaySubtitle}>
           Multiple choice, gap fill, transformation. All mixed, the way the exam asks.
         </Text>
         <Pressable onPress={onPress} style={({ pressed }) => [styles.cta, pressed && styles.pressed]}>
-          <Text style={styles.ctaText}>Start</Text>
-          <MaterialCommunityIcons name="arrow-right" size={18} color={London.flagRed} />
+          <Text style={styles.ctaText}>Start journey</Text>
+          <MaterialCommunityIcons name="arrow-right" size={18} color={London.white} />
         </Pressable>
       </View>
-    </Gradient>
+    </View>
   );
 }
 
@@ -260,34 +285,27 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: 40 },
 
   header: {
-    paddingBottom: 22,
+    minHeight: 286,
+    paddingBottom: 20,
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  headerFlag: {
-    position: 'absolute',
-    right: -70,
-    top: 4,
-    opacity: 0.16,
-    transform: [{ rotate: '-12deg' }],
-    borderRadius: 8,
-  },
-  headerContent: { paddingHorizontal: 20, paddingTop: 12, gap: 18 },
+  headerGlow: { position: 'absolute', width: 240, height: 240, borderRadius: 120, right: -70, top: -80, backgroundColor: 'rgba(69,128,183,0.2)' },
+  headerArtwork: { position: 'absolute', width: '72%', height: 245, right: -8, top: -4, opacity: 0.78 },
+  headerContent: { flex: 1, paddingHorizontal: 22, paddingTop: 18, justifyContent: 'space-between', gap: 30 },
   headerTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  kicker: {
-    color: London.gold,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1.6,
-    marginBottom: 4,
-  },
-  headerTitle: { color: London.white, fontSize: 32, fontWeight: '900', letterSpacing: -0.5 },
-  headerSub: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginTop: 2 },
+  brandPill: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 7, backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', borderRadius: 999, paddingVertical: 6, paddingHorizontal: 10, marginBottom: 10 },
+  brandDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: London.flagRed, borderWidth: 1, borderColor: London.white },
+  brandPillText: { color: London.gold, fontSize: 9.5, fontWeight: '900', letterSpacing: 1.3 },
+  headerTitle: { color: London.white, fontSize: 36, fontWeight: '900', letterSpacing: -1.2, maxWidth: '58%' },
+  headerSub: { color: 'rgba(255,255,255,0.76)', fontSize: 14, marginTop: 3, maxWidth: '55%' },
 
   chips: { flexDirection: 'row', gap: 10 },
   chip: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: 'rgba(7,24,39,0.48)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
     borderRadius: Radius.md,
     paddingVertical: 10,
     alignItems: 'center',
@@ -296,37 +314,42 @@ const styles = StyleSheet.create({
   chipValue: { color: London.white, fontSize: 18, fontWeight: '800' },
   chipLabel: { color: 'rgba(255,255,255,0.75)', fontSize: 11, fontWeight: '600' },
 
-  body: { paddingHorizontal: 20, paddingTop: 20, gap: 12 },
+  body: { paddingHorizontal: 20, paddingTop: 24, gap: 12 },
   rowText: { flex: 1, gap: 3 },
 
-  today: { borderRadius: Radius.xl, padding: 18, minHeight: 176, justifyContent: 'center' },
-  todayPhoneBox: { position: 'absolute', right: 14, bottom: 0, opacity: 0.95 },
-  todayText: { paddingRight: 92, gap: 6 },
-  todayKicker: { color: 'rgba(255,255,255,0.85)', fontSize: 11, fontWeight: '800', letterSpacing: 1.4 },
-  todayTitle: { color: London.white, fontSize: 22, fontWeight: '800' },
-  todaySubtitle: { color: 'rgba(255,255,255,0.9)', fontSize: 13, lineHeight: 18 },
+  today: { borderRadius: Radius.xl, minHeight: 202, justifyContent: 'center', backgroundColor: London.white, borderWidth: 1, borderColor: 'rgba(16,42,67,0.1)', overflow: 'hidden', ...Shadows.raised },
+  todayArt: { position: 'absolute', width: 122, right: 0, top: 0, bottom: 0, backgroundColor: London.sky, overflow: 'hidden', borderLeftWidth: 1, borderLeftColor: '#D7E1EF' },
+  todayLines: { right: -85, top: 10, opacity: 0.3 },
+  todayPhoneBox: { position: 'absolute', width: 118, height: 180, right: 1, bottom: -2 },
+  todayText: { padding: 20, paddingRight: 138, gap: 8 },
+  todayRoute: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  todayRouteDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: London.white, borderWidth: 3, borderColor: London.flagRed },
+  todayKicker: { color: London.flagRed, fontSize: 9.5, fontWeight: '900', letterSpacing: 1.2 },
+  todayTitle: { color: London.cab, fontSize: 22, lineHeight: 27, fontWeight: '900', letterSpacing: -0.4 },
+  todaySubtitle: { color: London.fog, fontSize: 12.5, lineHeight: 18 },
   cta: {
     marginTop: 8,
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: London.white,
+    backgroundColor: London.royal,
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 999,
   },
-  ctaText: { color: London.flagRed, fontWeight: '800', fontSize: 15 },
+  ctaText: { color: London.white, fontWeight: '800', fontSize: 14 },
 
   review: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: '#FBE9EB',
+    backgroundColor: London.blush,
     borderRadius: Radius.lg,
     borderWidth: 1.5,
     borderColor: London.flagRed,
     padding: 14,
+    ...Shadows.card,
   },
   reviewIcon: {
     width: 44,
@@ -339,8 +362,8 @@ const styles = StyleSheet.create({
   reviewTitle: { color: London.flagRed, fontSize: 15, fontWeight: '800' },
   reviewMeta: { color: London.cab, fontSize: 12, lineHeight: 17 },
 
-  stage: { gap: 8, marginTop: 14 },
-  stageHead: { flexDirection: 'row', alignItems: 'center', gap: 11, marginBottom: 2 },
+  stage: { gap: 0, marginTop: 18 },
+  stageHead: { flexDirection: 'row', alignItems: 'center', gap: 11, marginBottom: 12 },
   stageIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   stageTitle: { color: London.cab, fontSize: 17, fontWeight: '800' },
   stageSubtitle: { color: London.fog, fontSize: 12 },
@@ -352,10 +375,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: London.line,
-    paddingLeft: 14,
-    paddingRight: 8,
+    paddingLeft: 8,
+    paddingRight: 10,
+    marginBottom: 9,
+    ...Shadows.card,
   },
-  unitMain: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingVertical: 13 },
+  routeRail: { width: 30, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' },
+  routeDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 4, backgroundColor: London.white, zIndex: 2 },
+  routeLine: { position: 'absolute', width: 3, top: '50%', bottom: -29, opacity: 0.65 },
+  unitMain: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingVertical: 14 },
   unitTitle: { color: London.cab, fontSize: 14.5, fontWeight: '700' },
   unitMeta: { color: London.fog, fontSize: 12 },
   noteButton: {
@@ -382,6 +410,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderWidth: 1,
     borderColor: London.line,
+    ...Shadows.card,
   },
   suggestHead: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   suggestHeadText: { flex: 1, color: London.cab, fontSize: 13, lineHeight: 18 },

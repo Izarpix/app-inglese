@@ -3,9 +3,9 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
-import { UnionJack } from '@/components/london/union-jack';
+import { LondonHeroArt } from '@/components/london/hero-art';
 import { SafeTop } from '@/components/safe-top';
-import { Gradients, London, Radius } from '@/constants/london';
+import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { allCards, unitForTag } from '@/src/content';
 import { useAppState, weakestTags } from '@/src/store/app-state';
 
@@ -70,7 +70,7 @@ export default function ProgressScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <SafeTop>
           <Gradient colors={Gradients.tube} style={styles.header}>
-            <UnionJack width={220} style={styles.flag} />
+            <LondonHeroArt variant="progress" style={styles.headerArt} />
             <View style={styles.headerContent}>
               <Text style={styles.kicker}>HOW YOU ARE DOING</Text>
               <Text style={styles.title}>Progress</Text>
@@ -84,7 +84,31 @@ export default function ProgressScreen() {
         </SafeTop>
 
         <View style={styles.body}>
-          <Text style={styles.sectionTitle}>Where you slip most</Text>
+          <View style={styles.journeyCard}>
+            <View style={styles.journeyTop}>
+              <View>
+                <Text style={styles.eyebrow}>YOUR JOURNEY</Text>
+                <Text style={styles.journeyTitle}>{seen ? `${seen} stops explored` : 'Ready to depart'}</Text>
+              </View>
+              <View style={styles.accuracyBadge}>
+                <Text style={styles.accuracyValue}>{total ? `${accuracy}%` : '—'}</Text>
+                <Text style={styles.accuracyLabel}>accuracy</Text>
+              </View>
+            </View>
+            <View style={styles.journeyTrack}>
+              <View style={[styles.journeyFill, { width: `${Math.max(4, Math.round((seen / allCards.length) * 100))}%` }]} />
+              <View style={styles.journeyStop} />
+            </View>
+            <Text style={styles.journeyMeta}>{allCards.length - seen} cards left across the network</Text>
+          </View>
+
+          <View style={styles.sectionHead}>
+            <View>
+              <Text style={styles.sectionEyebrow}>SERVICE UPDATE</Text>
+              <Text style={styles.sectionTitle}>Where you slip most</Text>
+            </View>
+            <MaterialCommunityIcons name="subway-variant" size={24} color={London.flagRed} />
+          </View>
           <View style={styles.card}>
             {weak.length === 0 ? (
               <Text style={styles.empty}>
@@ -152,13 +176,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  flag: {
-    position: 'absolute',
-    right: -50,
-    bottom: -20,
-    opacity: 0.15,
-    transform: [{ rotate: '10deg' }],
-  },
+  headerArt: { position: 'absolute', width: '70%', height: 196, right: -14, top: -10, opacity: 0.72 },
   headerContent: { paddingHorizontal: 20, paddingTop: 14, gap: 4 },
   kicker: { color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
   title: { color: London.white, fontSize: 32, fontWeight: '900', marginBottom: 12 },
@@ -173,7 +191,20 @@ const styles = StyleSheet.create({
   },
   statValue: { color: London.white, fontSize: 19, fontWeight: '900' },
   statLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '600' },
-  body: { padding: 20, gap: 12 },
+  body: { padding: 20, gap: 14 },
+  journeyCard: { backgroundColor: London.white, borderRadius: Radius.lg, padding: 18, gap: 14, borderWidth: 1, borderColor: London.line, ...Shadows.card },
+  journeyTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
+  eyebrow: { color: London.flagRed, fontSize: 10, fontWeight: '900', letterSpacing: 1.4 },
+  journeyTitle: { color: London.cab, fontSize: 20, fontWeight: '800', marginTop: 3 },
+  accuracyBadge: { width: 70, height: 70, borderRadius: 35, backgroundColor: London.royal, alignItems: 'center', justifyContent: 'center', borderWidth: 4, borderColor: London.gold },
+  accuracyValue: { color: London.white, fontSize: 19, fontWeight: '900' },
+  accuracyLabel: { color: 'rgba(255,255,255,0.72)', fontSize: 9, fontWeight: '700' },
+  journeyTrack: { height: 6, backgroundColor: London.stoneDeep, borderRadius: 3, overflow: 'visible' },
+  journeyFill: { height: 6, backgroundColor: London.flagRed, borderRadius: 3 },
+  journeyStop: { position: 'absolute', right: -1, top: -4, width: 14, height: 14, borderRadius: 7, borderWidth: 3, borderColor: London.flagRed, backgroundColor: London.white },
+  journeyMeta: { color: London.fog, fontSize: 12 },
+  sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+  sectionEyebrow: { color: London.flagRed, fontSize: 9.5, fontWeight: '900', letterSpacing: 1.3, marginBottom: 2 },
   sectionTitle: { color: London.cab, fontSize: 17, fontWeight: '800' },
   card: {
     backgroundColor: London.white,
@@ -182,6 +213,7 @@ const styles = StyleSheet.create({
     borderColor: London.line,
     padding: 16,
     gap: 12,
+    ...Shadows.card,
   },
   empty: { color: London.fog, fontSize: 13.5, lineHeight: 20 },
   weakRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -189,7 +221,7 @@ const styles = StyleSheet.create({
   weakLabel: { color: London.cab, fontSize: 14, fontWeight: '600' },
   weakLink: { color: London.tube, fontSize: 11.5, fontWeight: '700' },
   missPill: {
-    backgroundColor: '#FBE9EB',
+    backgroundColor: London.blush,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 3,

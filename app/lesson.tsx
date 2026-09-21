@@ -3,9 +3,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
-import { UnionJack } from '@/components/london/union-jack';
+import { LondonHeroArt } from '@/components/london/hero-art';
 import { SafeTop } from '@/components/safe-top';
-import { Gradients, London, Radius } from '@/constants/london';
+import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { getUnit } from '@/src/content';
 
 /**
@@ -32,7 +32,7 @@ export default function LessonScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <SafeTop>
           <Gradient colors={Gradients.royal} style={styles.header}>
-            <UnionJack width={220} style={styles.flag} />
+            <LondonHeroArt style={styles.headerArt} />
             <View style={styles.headerContent}>
               <Pressable onPress={() => router.back()} hitSlop={10} style={styles.close}>
                 <MaterialCommunityIcons name="close" size={24} color={London.white} />
@@ -47,6 +47,8 @@ export default function LessonScreen() {
         <View style={styles.body}>
           {/* 1. THE RULE — the most important thing on the screen, so it looks it */}
           <View style={styles.ruleCard}>
+            <View style={styles.ticketPunchLeft} />
+            <View style={styles.ticketPunchRight} />
             <View style={styles.ruleHead}>
               <MaterialCommunityIcons name="key-variant" size={18} color={London.royal} />
               <Text style={styles.ruleHeadText}>THE RULE IN ONE SENTENCE</Text>
@@ -142,13 +144,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  flag: {
-    position: 'absolute',
-    right: -60,
-    top: 0,
-    opacity: 0.14,
-    transform: [{ rotate: '-10deg' }],
-  },
+  headerArt: { position: 'absolute', width: '70%', height: 230, right: -20, top: -10, opacity: 0.42 },
   headerContent: { paddingHorizontal: 20, paddingTop: 10, gap: 5 },
   close: { alignSelf: 'flex-start', marginBottom: 10 },
   kicker: { color: London.gold, fontSize: 10.5, fontWeight: '800', letterSpacing: 1.1 },
@@ -162,7 +158,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     padding: 18,
     gap: 8,
+    overflow: 'hidden',
+    ...Shadows.card,
   },
+  ticketPunchLeft: { position: 'absolute', left: -9, top: '42%', width: 18, height: 18, borderRadius: 9, backgroundColor: London.stone },
+  ticketPunchRight: { position: 'absolute', right: -9, top: '42%', width: 18, height: 18, borderRadius: 9, backgroundColor: London.stone },
   ruleHead: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   ruleHeadText: { color: London.royal, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   ruleText: { color: '#3A2B00', fontSize: 17, lineHeight: 25, fontWeight: '700' },
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     borderColor: London.line,
     padding: 16,
     gap: 12,
+    ...Shadows.card,
   },
   blockHead: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   blockDot: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },

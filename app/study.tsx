@@ -14,10 +14,11 @@ import {
 } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
+import { CityLines } from '@/components/london/city-lines';
+import { LondonHeroArt } from '@/components/london/hero-art';
 import { RewardBadge } from '@/components/london/reward-badge';
-import { UnionJack } from '@/components/london/union-jack';
 import { SafeTop } from '@/components/safe-top';
-import { Gradients, London, Radius } from '@/constants/london';
+import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { play } from '@/src/audio/feedback';
 import { allCards, getUnit, shuffle, unitForTag } from '@/src/content';
 import type { Card, CardType } from '@/src/content/types';
@@ -212,7 +213,7 @@ export default function StudyScreen() {
 
           {TAP_TYPES.includes(card.type) ? (
             <View style={styles.options}>
-              {(card.options ?? []).map((option) => (
+              {(card.options ?? []).map((option, optionIndex) => (
                 <Pressable
                   key={option}
                   disabled={answered}
@@ -228,7 +229,11 @@ export default function StudyScreen() {
                       normalise(option) !== normalise(card.answers[0]) &&
                       styles.optionWrong,
                   ]}>
+                  <View style={styles.optionLetter}>
+                    <Text style={styles.optionLetterText}>{String.fromCharCode(65 + optionIndex)}</Text>
+                  </View>
                   <Text style={styles.optionText}>{option}</Text>
+                  <MaterialCommunityIcons name="chevron-right" size={18} color={London.line} />
                 </Pressable>
               ))}
             </View>
@@ -349,7 +354,7 @@ function Summary({
     <View style={styles.root}>
       <SafeTop>
         <Gradient colors={Gradients.royal} style={styles.summaryHeader}>
-          <UnionJack width={300} style={styles.summaryFlag} />
+          <LondonHeroArt style={styles.summaryArt} />
           <View style={styles.summaryContent}>
             <Text style={styles.summaryKicker}>SESSION COMPLETE</Text>
             <Text style={styles.summaryScore}>{score}%</Text>
@@ -401,6 +406,7 @@ function Shell({
     <View style={styles.root}>
       <SafeTop>
         <Gradient colors={Gradients.royal} style={styles.shellHeader}>
+          <CityLines style={styles.shellLines} />
           <View style={styles.shellTop}>
             <Pressable onPress={onClose} hitSlop={10}>
               <MaterialCommunityIcons name="close" size={24} color={London.white} />
@@ -431,6 +437,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
+  shellLines: { right: -62, top: -24, opacity: 0.12 },
   shellTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -452,7 +459,7 @@ const styles = StyleSheet.create({
 
   scroll: { padding: 20, gap: 14, paddingBottom: 30 },
 
-  typeRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  typeRow: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: London.sky, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 11, alignSelf: 'stretch' },
   typeLabel: { flex: 1, color: London.tube, fontSize: 12, fontWeight: '800', letterSpacing: 0.6 },
   levelPill: {
     backgroundColor: London.royal,
@@ -469,6 +476,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: London.line,
     gap: 10,
+    ...Shadows.card,
   },
   prompt: { color: London.cab, fontSize: 21, lineHeight: 30, fontWeight: '600' },
   hint: { color: London.fog, fontSize: 13, lineHeight: 18 },
@@ -494,23 +502,30 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: London.cab,
     textAlignVertical: 'top',
+    ...Shadows.card,
   },
   answerInputLocked: { opacity: 0.6 },
 
   options: { gap: 10 },
   option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: London.white,
     borderRadius: Radius.md,
     borderWidth: 2,
     borderColor: London.line,
     paddingVertical: 15,
     paddingHorizontal: 16,
+    ...Shadows.card,
   },
   optionRight: { borderColor: London.park, backgroundColor: '#E6F4EE' },
   optionWrong: { borderColor: London.flagRed, backgroundColor: '#FBE9EB' },
-  optionText: { color: London.cab, fontSize: 16, fontWeight: '600' },
+  optionLetter: { width: 30, height: 30, borderRadius: 15, backgroundColor: London.sky, alignItems: 'center', justifyContent: 'center' },
+  optionLetterText: { color: London.royal, fontSize: 12, fontWeight: '900' },
+  optionText: { flex: 1, color: London.cab, fontSize: 16, fontWeight: '600' },
 
-  feedback: { borderRadius: Radius.lg, borderWidth: 1.5, padding: 16, gap: 6 },
+  feedback: { borderRadius: Radius.lg, borderWidth: 1.5, padding: 16, gap: 6, ...Shadows.card },
   feedbackHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
   feedbackTitle: { fontSize: 15, fontWeight: '800' },
   expectedLabel: { color: London.fog, fontSize: 11, fontWeight: '800', letterSpacing: 0.8 },
@@ -546,13 +561,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  summaryFlag: {
-    position: 'absolute',
-    left: -60,
-    bottom: -40,
-    opacity: 0.14,
-    transform: [{ rotate: '8deg' }],
-  },
+  summaryArt: { position: 'absolute', width: '76%', height: 245, right: -20, top: -16, opacity: 0.42 },
   summaryContent: { alignItems: 'center', paddingTop: 30, gap: 4 },
   summaryKicker: { color: London.gold, fontSize: 12, fontWeight: '800', letterSpacing: 1.6 },
   summaryScore: { color: London.white, fontSize: 58, fontWeight: '900' },
@@ -566,6 +575,7 @@ const styles = StyleSheet.create({
     borderColor: London.gold,
     padding: 16,
     gap: 12,
+    ...Shadows.card,
   },
   rewardTitle: { color: London.cab, fontSize: 16, fontWeight: '800' },
   rewardRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },

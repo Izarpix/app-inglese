@@ -30,14 +30,9 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarActiveTintColor: London.royal,
         tabBarInactiveTintColor: London.fog,
-        /*
-         * A floating bar, not a bar glued to the bottom. On the iPhone the page
-         * stops 62 pt above the edge of the screen (ADR-019) and no bar can
-         * reach it; floating turns that gap from a defect into margin. The bar
-         * itself is transparent — the white shape is drawn by TabBarPill — but
-         * it still takes up room in the layout, so nothing hides behind it.
-         */
-        tabBarBackground: () => <TabBarPill bottom={bottom} />,
+        // The dock's white surface continues into Safari's unreachable bottom
+        // strip; icon padding still pays only the real usable safe area.
+        tabBarBackground: () => <TabBarPill />,
         tabBarStyle: {
           backgroundColor: 'transparent',
           borderTopWidth: 0,

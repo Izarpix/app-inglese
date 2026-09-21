@@ -65,7 +65,7 @@ const css = `
    */
   html {
     height: 100%;
-    background-color: #F6F3EC;
+    background-color: #FFFFFF;
   }
   body {
     position: fixed;
@@ -78,13 +78,11 @@ const css = `
     overflow: hidden;              /* the app scrolls inside, not the page */
     overscroll-behavior: none;     /* no bounce, no pull-to-refresh */
     /*
-     * Stone, and it is not a detail. On an iPhone the page is 62 pt shorter
-     * than the screen (ADR-019) and iOS fills what is left with this colour.
-     * It used to be white to hide inside the tab bar; now that the bar floats
-     * (components/tab-bar-pill.tsx) the band has to be the colour of the page
-     * instead, so it reads as the margin around the bar.
+     * iOS can leave a strip outside the standalone web app's layout viewport.
+     * No element can occupy it, so Safari paints this body colour there. White
+     * deliberately matches the bottom navigation dock.
      */
-    background-color: #F6F3EC;
+    background-color: #FFFFFF;
     -webkit-text-size-adjust: 100%;
   }
   /*

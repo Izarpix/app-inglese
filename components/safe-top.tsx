@@ -1,7 +1,8 @@
 import type { PropsWithChildren } from 'react';
-import { Platform, View, type ViewProps } from 'react-native';
+import { Platform, StyleSheet, View, type ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { London } from '@/constants/london';
 import { useSafeTop } from '@/src/hooks/use-safe-area';
 
 /**
@@ -30,8 +31,14 @@ export function SafeTop({ children, style, ...rest }: PropsWithChildren<ViewProp
   }
 
   return (
-    <View style={[{ paddingTop: top }, style]} {...rest}>
+    <View style={[styles.webSafeTop, { paddingTop: top + 8 }, style]} {...rest}>
       {children}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  webSafeTop: {
+    backgroundColor: London.stone,
+  },
+});

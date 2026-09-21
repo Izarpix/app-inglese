@@ -3,33 +3,30 @@ import { StyleSheet, View } from 'react-native';
 import { London, Radius, Shadows } from '@/constants/london';
 
 /**
- * The white rounded shape behind the tab bar.
+ * The white dock behind the tab bar.
  *
  * It exists because of a limit measured on the iPhone (ADR-019): a web app
- * launched from the home screen gets a window 62 pt shorter than the screen, so
- * the bar can never touch the bottom edge. A bar that is *supposed* to touch it
- * looks broken with that gap; a bar that floats is supposed to have room around
- * it, so the same 62 pt read as margin.
- *
- * The bar itself stays transparent and this shape is drawn behind it, which
- * keeps the navigator reserving the bar's height: nothing ends up hidden
- * underneath.
+ * launched from the home screen can get a window shorter than the physical
+ * screen. The dock deliberately continues below that window; Safari fills the
+ * unreachable remainder with the same white, so the navigation reads as one
+ * continuous surface instead of a floating pill with a beige hole underneath.
  */
-export function TabBarPill({ bottom }: { bottom: number }) {
-  return <View style={[styles.pill, { bottom: 6 + bottom }]} pointerEvents="none" />;
+export function TabBarPill() {
+  return <View style={styles.dock} pointerEvents="none" />;
 }
 
 const styles = StyleSheet.create({
-  pill: {
+  dock: {
     position: 'absolute',
-    left: 14,
-    right: 14,
-    top: 6,
-    borderRadius: Radius.lg,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: -120,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
     backgroundColor: London.white,
-    borderWidth: 1,
-    borderColor: London.line,
-    // soft lift, so the pill reads as sitting above the page
+    borderTopWidth: 1,
+    borderTopColor: London.line,
     ...Shadows.raised,
   },
 });

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticTab } from '@/components/haptic-tab';
 import { TabBarPill } from '@/components/tab-bar-pill';
 import { London } from '@/constants/london';
-import { useDeadBottom, useSafeBottom } from '@/src/hooks/use-safe-area';
+import { useSafeBottom } from '@/src/hooks/use-safe-area';
 
 export default function TabLayout() {
   // Two sources, because neither is right everywhere: the library is right in a
@@ -17,10 +17,6 @@ export default function TabLayout() {
   const cssBottom = useSafeBottom();
   const needed = Math.max(insets.bottom, cssBottom, 10);
 
-  // iOS standalone can make the layout viewport shorter than the display. The
-  // bar stays in the layout but is painted down through that missing distance,
-  // exactly like the floating navigation shown in the reference app.
-  const dead = useDeadBottom();
   return (
     <Tabs
       screenOptions={{
@@ -28,10 +24,9 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarActiveTintColor: London.royal,
         tabBarInactiveTintColor: London.fog,
-        // The pill floats over the page, as in a native app. On iPhone Home
-        // Screen, WebKit makes the layout viewport shorter than the display;
-        // translating by `dead` paints the pill into that extra area while the
-        // `bottom` value still keeps it clear of the home indicator.
+        // The pill floats over the page, as in a native app. The HTML shell
+        // gives the standalone PWA its physical display height, while `bottom`
+        // keeps the pill clear of the home indicator.
         tabBarBackground: () => <TabBarPill />,
         tabBarStyle: {
           backgroundColor: 'transparent',
@@ -44,7 +39,6 @@ export default function TabLayout() {
           height: 70,
           paddingTop: 6,
           paddingBottom: 6,
-          transform: [{ translateY: dead }],
         },
         // Without an explicit line height the web build squeezes the label to a
         // few pixels and clips it; flexShrink keeps it from being compressed.

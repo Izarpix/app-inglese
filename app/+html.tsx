@@ -44,6 +44,7 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />
 
+        <script dangerouslySetInnerHTML={{ __html: standaloneViewportScript }} />
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
@@ -56,24 +57,22 @@ const css = `
   /*
    * Full height on an iPhone added to the home screen.
    *
-   * The body is pinned to the four edges and its height is "auto" on purpose.
-   * Expo injects its own reset before this sheet — #root,body,html{height:100%}
-   * — and an explicit height beats "bottom" whenever both are set. That 100% is
-   * the window, and in a home screen web app iOS measures the window wrong: the
-   * app ends up shorter than the screen and leaves a dead strip under the tab
-   * bar. With "auto" the four edges decide, and there is no number to get wrong.
+   * In a standalone iPhone web app, the layout viewport can be shorter than
+   * the display. The standalone-screen-height variable is set before React
+   * mounts from screen.height, so the app frame — including its floating tab bar — gets
+   * the physical display height rather than WebKit's shortened viewport.
    */
   html {
-    height: 100%;
+    height: var(--standalone-screen-height, 100%);
     background-color: #F6F3EC;
   }
   body {
     position: fixed;
     top: 0;
     right: 0;
-    bottom: 0;
+    bottom: auto;
     left: 0;
-    height: auto;                  /* beats the Expo reset: see above */
+    height: var(--standalone-screen-height, 100%);
     margin: 0;
     overflow: hidden;              /* the app scrolls inside, not the page */
     overscroll-behavior: none;     /* no bounce, no pull-to-refresh */
@@ -114,4 +113,27 @@ const css = `
   button, [role="button"] {
     touch-action: manipulation;
   }
+`;
+
+const standaloneViewportScript = `
+  (function () {
+    function setStandaloneHeight() {
+      var isStandalone = window.navigator.standalone === true ||
+        window.matchMedia('(display-mode: standalone)').matches;
+      var isPortrait = window.innerHeight > window.innerWidth;
+
+      if (isStandalone && isPortrait && window.screen.height > window.innerHeight) {
+        document.documentElement.style.setProperty(
+          '--standalone-screen-height',
+          window.screen.height + 'px'
+        );
+      } else {
+        document.documentElement.style.removeProperty('--standalone-screen-height');
+      }
+    }
+
+    setStandaloneHeight();
+    window.addEventListener('resize', setStandaloneHeight);
+    window.addEventListener('orientationchange', setStandaloneHeight);
+  })();
 `;

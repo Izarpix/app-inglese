@@ -62,15 +62,15 @@ export function useSafeBottom(fallback = 8): number {
  * The points of screen the page does not have.
  *
  * Measured on an iPhone 16 Pro with the app on the home screen: the screen is
- * 874 pt, the window iOS hands the page is 812, and the page is drawn from the
- * top edge anyway. Those 62 pt — exactly the status bar — end up *under* the
- * app, outside the page, and no CSS can reach them: iOS fills them with the
- * body background, which is why that is white (app/+html.tsx).
+ * 874 pt and the window iOS hands the page can be 812 pt. In the configuration
+ * where iOS has already placed the page below the status bar, those missing 62
+ * pt are at the TOP even though WebKit can also expose them through the bottom
+ * safe-area value.
  *
- * They are still screen, though, and the eye counts them. If the tab bar also
- * paid the home indicator inset on top of them, its icons would float about a
- * centimetre too high — which is exactly what "the tab bar is detached from the
- * bottom" looks like. So whoever pays a bottom inset subtracts this first.
+ * Paying that value again at the bottom makes the tab bar about 62 pt too tall:
+ * the icons float above a large empty white area. Whoever pays a bottom inset
+ * therefore subtracts the part of the screen that iOS already reserved at the
+ * top.
  *
  * Zero everywhere else: in a browser tab, on the phone build, in landscape.
  */
@@ -97,12 +97,10 @@ export function useDeadBottom(): number {
       }
       /*
        * Where the missing points are depends on where the page starts, and the
-       * top inset says it: a page that runs under the clock has to keep that
-       * space clear (inset > 0) and loses its points at the BOTTOM; a page iOS
-       * has already pushed below the status bar has nothing to keep clear
-       * (inset 0) and lost the same points at the TOP, where they cost nothing.
-       * Subtracting them from the tab bar in that second case would push the
-       * bar onto the home indicator.
+       * top inset tells us. If it is zero, iOS has already placed the viewport
+       * below the status bar: `missing` is therefore a top reservation and must
+       * not inflate the bottom navigation. If it is positive, the page runs
+       * under the clock and that missing height must not be cancelled here.
        */
       const probe = document.createElement('div');
       probe.style.cssText =
@@ -110,7 +108,7 @@ export function useDeadBottom(): number {
       document.body.appendChild(probe);
       const top = probe.getBoundingClientRect().height;
       probe.remove();
-      setDead(top > 0 ? missing : 0);
+      setDead(top === 0 ? missing : 0);
     };
 
     measure();

@@ -12,18 +12,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { RewardBadge } from '@/components/london/reward-badge';
 import { UnionJack } from '@/components/london/union-jack';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
+import { play } from '@/src/audio/feedback';
 import { allCards, getUnit, shuffle, unitForTag } from '@/src/content';
 import type { Card, CardType } from '@/src/content/types';
 import { gradeAnswer, normalise, type Grade } from '@/src/domain/grading';
-import { play } from '@/src/audio/feedback';
-import { computeRewards, isUnlocked } from '@/src/domain/rewards';
 import { buildReviewSession } from '@/src/domain/review';
+import { computeRewards, isUnlocked } from '@/src/domain/rewards';
 import { useAppState } from '@/src/store/app-state';
 
 const SESSION_LENGTH = 10;
@@ -347,9 +347,9 @@ function Summary({
 
   return (
     <View style={styles.root}>
-      <Gradient colors={Gradients.royal} style={styles.summaryHeader}>
-        <UnionJack width={300} style={styles.summaryFlag} />
-        <SafeAreaView edges={['top']}>
+      <SafeTop>
+        <Gradient colors={Gradients.royal} style={styles.summaryHeader}>
+          <UnionJack width={300} style={styles.summaryFlag} />
           <View style={styles.summaryContent}>
             <Text style={styles.summaryKicker}>SESSION COMPLETE</Text>
             <Text style={styles.summaryScore}>{score}%</Text>
@@ -357,8 +357,8 @@ function Summary({
               {right} out of {grades.length} answers
             </Text>
           </View>
-        </SafeAreaView>
-      </Gradient>
+        </Gradient>
+      </SafeTop>
 
       <ScrollView contentContainerStyle={styles.summaryBody}>
         {earned.length ? (
@@ -399,8 +399,8 @@ function Shell({
 }) {
   return (
     <View style={styles.root}>
-      <Gradient colors={Gradients.royal} style={styles.shellHeader}>
-        <SafeAreaView edges={['top']}>
+      <SafeTop>
+        <Gradient colors={Gradients.royal} style={styles.shellHeader}>
           <View style={styles.shellTop}>
             <Pressable onPress={onClose} hitSlop={10}>
               <MaterialCommunityIcons name="close" size={24} color={London.white} />
@@ -415,8 +415,8 @@ function Shell({
               <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
             </View>
           ) : null}
-        </SafeAreaView>
-      </Gradient>
+        </Gradient>
+      </SafeTop>
       {children}
     </View>
   );
@@ -426,7 +426,11 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
   flex: { flex: 1 },
 
-  shellHeader: { paddingBottom: 14 },
+  shellHeader: {
+    paddingBottom: 14,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   shellTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -537,7 +541,11 @@ const styles = StyleSheet.create({
   primaryText: { color: London.white, fontSize: 16, fontWeight: '800' },
   pressed: { opacity: 0.85 },
 
-  summaryHeader: { paddingBottom: 30 },
+  summaryHeader: {
+    paddingBottom: 30,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   summaryFlag: {
     position: 'absolute',
     left: -60,

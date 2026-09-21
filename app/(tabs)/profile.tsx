@@ -11,18 +11,16 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { PhoneBox } from '@/components/london/phone-box';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, units } from '@/src/content';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
-import { useDisplayReport } from '@/src/hooks/use-display-report';
-import { useSafeBottom } from '@/src/hooks/use-safe-bottom';
+import { useAppState, type Profile } from '@/src/store/app-state';
 import { pageBuildId } from '@/src/sync/auto-update';
 import { ensureSession, flush, pendingCount } from '@/src/sync/remote';
-import { useAppState, type Profile } from '@/src/store/app-state';
 
 const LEVELS: Profile['level'][] = ['B1', 'B2', 'C1'];
 const GOALS = [5, 10, 20, 30];
@@ -38,8 +36,6 @@ export default function ProfileScreen() {
   const [pending, setPending] = useState(0);
   // Temporary readout: tells us what iOS reports for the home indicator area,
   // which is what the tab bar has to cover. Remove once the layout is settled.
-  const safeBottom = useSafeBottom();
-  const display = useDisplayReport();
 
   // Opening this screen is a good moment to retry anything still waiting.
   useEffect(() => {
@@ -60,9 +56,9 @@ export default function ProfileScreen() {
     <View style={styles.root}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Gradient colors={Gradients.royal} style={styles.header}>
-            <PhoneBox height={118} style={styles.phoneBox} />
-            <SafeAreaView edges={['top']}>
+          <SafeTop>
+            <Gradient colors={Gradients.royal} style={styles.header}>
+              <PhoneBox height={118} style={styles.phoneBox} />
               <View style={styles.headerContent}>
                 <View style={styles.avatar}>
                   <Text style={styles.avatarText}>
@@ -74,8 +70,8 @@ export default function ProfileScreen() {
                   Level {profile.level} · {answers.length} answers · {unlocked} rewards
                 </Text>
               </View>
-            </SafeAreaView>
-          </Gradient>
+            </Gradient>
+          </SafeTop>
 
           <View style={styles.body}>
             <Text style={styles.label}>Your name</Text>
@@ -122,15 +118,6 @@ export default function ProfileScreen() {
               <Row icon="tag-outline" label="Version" value={Constants.expoConfig?.version ?? '--'} />
               <Row icon="palette-outline" label="Made by" value="Izarpix" />
               <Row icon="update" label="Build" value={pageBuildId() ?? 'dev'} />
-              <Row icon="arrow-collapse-down" label="Safe area" value={`${Math.round(safeBottom)} pt`} />
-              {display ? (
-                <>
-                  <Row icon="monitor-screenshot" label="Viewport" value={display.viewport} />
-                  <Row icon="cellphone" label="Screen" value={display.screen} />
-                  <Row icon="border-none-variant" label="Insets" value={display.insets} />
-                  <Row icon="application-outline" label="Standalone" value={display.standalone} />
-                </>
-              ) : null}
               <Row
                 icon="cloud-check-outline"
                 label="Sync"
@@ -175,7 +162,11 @@ function Row({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
   scroll: { paddingBottom: 40 },
-  header: { paddingBottom: 24 },
+  header: {
+    paddingBottom: 24,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   phoneBox: { position: 'absolute', right: 18, bottom: -6, opacity: 0.55 },
   headerContent: { paddingHorizontal: 20, paddingTop: 16, gap: 6 },
   avatar: {

@@ -1,10 +1,10 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { UnionJack } from '@/components/london/union-jack';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
 import { getUnit } from '@/src/content';
 
@@ -30,9 +30,9 @@ export default function LessonScreen() {
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Gradient colors={Gradients.royal} style={styles.header}>
-          <UnionJack width={220} style={styles.flag} />
-          <SafeAreaView edges={['top']}>
+        <SafeTop>
+          <Gradient colors={Gradients.royal} style={styles.header}>
+            <UnionJack width={220} style={styles.flag} />
             <View style={styles.headerContent}>
               <Pressable onPress={() => router.back()} hitSlop={10} style={styles.close}>
                 <MaterialCommunityIcons name="close" size={24} color={London.white} />
@@ -41,8 +41,8 @@ export default function LessonScreen() {
               <Text style={styles.title}>{unit.title}</Text>
               <Text style={styles.summary}>{unit.summary}</Text>
             </View>
-          </SafeAreaView>
-        </Gradient>
+          </Gradient>
+        </SafeTop>
 
         <View style={styles.body}>
           {/* 1. THE RULE — the most important thing on the screen, so it looks it */}
@@ -137,11 +137,15 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: 40 },
   missing: { padding: 30, color: London.fog },
 
-  header: { paddingBottom: 26 },
+  header: {
+    paddingBottom: 26,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   flag: {
     position: 'absolute',
     right: -60,
-    top: 30,
+    top: 0,
     opacity: 0.14,
     transform: [{ rotate: '-10deg' }],
   },

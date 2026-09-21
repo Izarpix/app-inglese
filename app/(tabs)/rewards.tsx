@@ -1,8 +1,8 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { RewardBadge } from '@/components/london/reward-badge';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
 import { computeRewards, isUnlocked } from '@/src/domain/rewards';
 import { useAppState } from '@/src/store/app-state';
@@ -15,8 +15,8 @@ export default function RewardsScreen() {
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Gradient colors={Gradients.sunset} style={styles.header}>
-          <SafeAreaView edges={['top']}>
+        <SafeTop>
+          <Gradient colors={Gradients.sunset} style={styles.header}>
             <View style={styles.headerContent}>
               <Text style={styles.kicker}>YOUR COLLECTION</Text>
               <Text style={styles.title}>Rewards</Text>
@@ -24,8 +24,8 @@ export default function RewardsScreen() {
                 {unlocked} of {rewards.length} unlocked
               </Text>
             </View>
-          </SafeAreaView>
-        </Gradient>
+          </Gradient>
+        </SafeTop>
 
         <View style={styles.body}>
           {rewards.map((reward) => {
@@ -68,7 +68,11 @@ export default function RewardsScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
   scroll: { paddingBottom: 40 },
-  header: { paddingBottom: 26 },
+  header: {
+    paddingBottom: 26,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   headerContent: { paddingHorizontal: 20, paddingTop: 14, gap: 2 },
   kicker: { color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
   title: { color: London.white, fontSize: 32, fontWeight: '900' },

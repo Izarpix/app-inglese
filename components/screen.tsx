@@ -1,6 +1,6 @@
 import { StyleSheet, type ViewProps } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { SafeTop } from '@/components/safe-top';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
@@ -16,7 +16,7 @@ type ScreenProps = ViewProps & {
 export function Screen({ title, subtitle, children, style, ...rest }: ScreenProps) {
   return (
     <ThemedView style={styles.root}>
-      <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <SafeTop style={styles.safeArea}>
         <ThemedView style={[styles.content, style]} {...rest}>
           <ThemedText type="title">{title}</ThemedText>
           {subtitle ? (
@@ -26,7 +26,7 @@ export function Screen({ title, subtitle, children, style, ...rest }: ScreenProp
           ) : null}
           {children}
         </ThemedView>
-      </SafeAreaView>
+      </SafeTop>
     </ThemedView>
   );
 }

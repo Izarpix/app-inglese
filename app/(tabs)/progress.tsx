@@ -1,10 +1,10 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { UnionJack } from '@/components/london/union-jack';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, unitForTag } from '@/src/content';
 import { useAppState, weakestTags } from '@/src/store/app-state';
@@ -68,9 +68,9 @@ export default function ProgressScreen() {
   return (
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Gradient colors={Gradients.tube} style={styles.header}>
-          <UnionJack width={220} style={styles.flag} />
-          <SafeAreaView edges={['top']}>
+        <SafeTop>
+          <Gradient colors={Gradients.tube} style={styles.header}>
+            <UnionJack width={220} style={styles.flag} />
             <View style={styles.headerContent}>
               <Text style={styles.kicker}>HOW YOU ARE DOING</Text>
               <Text style={styles.title}>Progress</Text>
@@ -80,8 +80,8 @@ export default function ProgressScreen() {
                 <Stat value={`${seen}/${allCards.length}`} label="Cards seen" />
               </View>
             </View>
-          </SafeAreaView>
-        </Gradient>
+          </Gradient>
+        </SafeTop>
 
         <View style={styles.body}>
           <Text style={styles.sectionTitle}>Where you slip most</Text>
@@ -147,7 +147,11 @@ function Stat({ value, label }: { value: string; label: string }) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
   scroll: { paddingBottom: 40 },
-  header: { paddingBottom: 24 },
+  header: {
+    paddingBottom: 24,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   flag: {
     position: 'absolute',
     right: -50,

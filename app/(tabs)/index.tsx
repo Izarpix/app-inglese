@@ -11,12 +11,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Gradient } from '@/components/london/gradient';
 import { PhoneBox } from '@/components/london/phone-box';
 import { Roundel } from '@/components/london/roundel';
 import { UnionJack } from '@/components/london/union-jack';
+import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius } from '@/constants/london';
 import { allCards, STAGES, unitsOf } from '@/src/content';
 import type { Stage } from '@/src/content/types';
@@ -125,9 +125,9 @@ export default function HomeScreen() {
 
 function Header({ studied, accuracy }: { studied: number; accuracy: number }) {
   return (
-    <Gradient colors={Gradients.royal} style={styles.header}>
-      <UnionJack width={260} style={styles.headerFlag} />
-      <SafeAreaView edges={['top']}>
+    <SafeTop>
+      <Gradient colors={Gradients.royal} style={styles.header}>
+        <UnionJack width={260} style={styles.headerFlag} />
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>
             <View style={{ flex: 1 }}>
@@ -144,8 +144,8 @@ function Header({ studied, accuracy }: { studied: number; accuracy: number }) {
             <Chip icon="cards-playing-outline" label="Cards" value={`${allCards.length}`} />
           </View>
         </View>
-      </SafeAreaView>
-    </Gradient>
+      </Gradient>
+    </SafeTop>
   );
 }
 
@@ -259,13 +259,15 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: London.stone },
   scroll: { paddingBottom: 40 },
 
-  header: { paddingBottom: 22 },
-  // Kept clear of the status bar: iOS blurs whatever sits behind it, and a
-  // blurred flag looked like a rendering fault.
+  header: {
+    paddingBottom: 22,
+    borderBottomLeftRadius: Radius.xl,
+    borderBottomRightRadius: Radius.xl,
+  },
   headerFlag: {
     position: 'absolute',
     right: -70,
-    top: 64,
+    top: 4,
     opacity: 0.16,
     transform: [{ rotate: '-12deg' }],
     borderRadius: 8,

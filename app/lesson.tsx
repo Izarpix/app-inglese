@@ -8,6 +8,8 @@ import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { getUnit, lessonGuideFor } from '@/src/content';
 
+const PROFILE_SIZED_ART = { width: '74%' as const, height: 224, right: -20, top: -12, opacity: 0.58 };
+
 /**
  * One lesson, rendered from its fixed four blocks. The screen has no branching
  * per topic on purpose: whatever the subject, the reader finds the rule at the
@@ -38,7 +40,7 @@ export default function LessonScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <SafeTop>
           <Gradient colors={Gradients.royal} style={styles.header}>
-            <LondonHeroArt style={styles.headerArt} />
+            <LondonHeroArt style={[styles.headerArt, PROFILE_SIZED_ART]} />
             <View style={styles.headerContent}>
               <Pressable onPress={() => router.back()} hitSlop={10} style={styles.close}>
                 <MaterialCommunityIcons name="close" size={24} color={London.white} />

@@ -9,6 +9,8 @@ import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { getUnit, STUDY_CATEGORIES } from '@/src/content';
 
+const PROFILE_SIZED_ART = { width: '74%' as const, height: 224, right: -20, top: -12, opacity: 0.58 };
+
 type Category = (typeof STUDY_CATEGORIES)[number];
 
 /** A subject-first library. The Practice tab remains for mixed sessions. */
@@ -19,7 +21,7 @@ export default function LearnScreen() {
 
   return <View style={styles.root}><ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
     <SafeTop><Gradient colors={Gradients.tube} style={styles.header}>
-      <LondonHeroArt variant="progress" style={styles.headerArt} />
+      <LondonHeroArt variant="progress" style={[styles.headerArt, PROFILE_SIZED_ART]} />
       <View style={styles.headerContent}>
         {category ? <Pressable onPress={() => setCategory(null)} style={styles.back} hitSlop={8}><MaterialCommunityIcons name="arrow-left" size={18} color={London.white} /><Text style={styles.backText}>All subjects</Text></Pressable> : <Text style={styles.kicker}>YOUR LEARNING LIBRARY</Text>}
         <Text style={styles.title}>{category?.title ?? 'Learn'}</Text>

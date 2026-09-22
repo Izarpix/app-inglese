@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -20,7 +21,7 @@ import { RewardBadge } from '@/components/london/reward-badge';
 import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { play } from '@/src/audio/feedback';
-import { allCards, getUnit, shuffle, unitForTag } from '@/src/content';
+import { allCards, cardsForUnits, getUnit, shuffle, unitForTag } from '@/src/content';
 import type { Card, CardType } from '@/src/content/types';
 import { gradeAnswer, normalise, type Grade } from '@/src/domain/grading';
 import { buildReviewSession } from '@/src/domain/review';
@@ -39,6 +40,9 @@ const TYPE_LABEL: Record<CardType, string> = {
   transform: 'Rewrite with the keyword',
   box: 'Choose from the word box',
   form: 'Form the right word',
+  flashcard: 'Visual flashcard',
+  reading: 'Read and answer',
+  news: 'News comprehension',
 };
 
 const TYPE_ICON: Record<CardType, keyof typeof MaterialCommunityIcons.glyphMap> = {
@@ -51,18 +55,40 @@ const TYPE_ICON: Record<CardType, keyof typeof MaterialCommunityIcons.glyphMap> 
   transform: 'swap-horizontal',
   box: 'package-variant-closed',
   form: 'alphabetical-variant',
+  flashcard: 'image-outline',
+  reading: 'text-box-search-outline',
+  news: 'newspaper-variant-outline',
 };
 
 /** Card types answered by tapping an option rather than typing. */
-const TAP_TYPES: CardType[] = ['choice', 'box'];
+const TAP_TYPES: CardType[] = ['choice', 'box', 'reading', 'news'];
+
+const FLASH_IMAGES = {
+  'big-ben': require('@/assets/images/rewards/big-ben.png'),
+  'double-decker': require('@/assets/images/rewards/double-decker.png'),
+  'tube-pass': require('@/assets/images/rewards/tube-pass.png'),
+  'first-steps': require('@/assets/images/rewards/first-steps.png'),
+  'spot-on': require('@/assets/images/rewards/spot-on.png'),
+  'royal-flush': require('@/assets/images/rewards/royal-flush.png'),
+  'body-hand': require('@/assets/images/flashcards/body-hand-cartoon.png'),
+  'body-eye': require('@/assets/images/flashcards/body-eye-cartoon.png'),
+};
 
 export default function StudyScreen() {
   const router = useRouter();
-  const { deckId, mode } = useLocalSearchParams<{ deckId?: string; mode?: string }>();
+  const { deckId, mode, unitIds, exerciseTypes, title: sessionTitle, length, timerSeconds } = useLocalSearchParams<{ deckId?: string; mode?: string; unitIds?: string; exerciseTypes?: string; title?: string; length?: string; timerSeconds?: string }>();
   const { answers, recordAnswer } = useAppState();
 
   const deck = deckId ? getUnit(deckId) : undefined;
   const isReview = mode === 'review';
+  const sessionLength = Math.min(Math.max(Number(length) || SESSION_LENGTH, 1), 50);
+  const totalSeconds = Math.max(Number(timerSeconds) || 0, 0);
+  const requestedUnits = useMemo(() => unitIds?.split(',').filter(Boolean) ?? [], [unitIds]);
+  const requestedTypes = useMemo(() => exerciseTypes?.split(',').filter((type): type is CardType => Object.hasOwn(TYPE_LABEL, type)) ?? [], [exerciseTypes]);
+  const cardPool = useMemo(() => {
+    const byUnit = requestedUnits.length ? cardsForUnits(requestedUnits) : (deck ? deck.cards : allCards);
+    return requestedTypes.length ? byUnit.filter((item) => requestedTypes.includes(item.type)) : byUnit;
+  }, [deck, requestedTypes, requestedUnits]);
 
   /** Frozen at mount: a review session must not reshuffle as you answer it. */
   const answersAtStart = useRef(answers);
@@ -73,9 +99,9 @@ export default function StudyScreen() {
    * card is going.
    */
   const cards = useMemo(() => {
-    if (isReview) return buildReviewSession(answersAtStart.current, allCards, SESSION_LENGTH);
-    return shuffle(deck ? deck.cards : allCards).slice(0, SESSION_LENGTH);
-  }, [deck, isReview]);
+    if (isReview) return buildReviewSession(answersAtStart.current, allCards, sessionLength);
+    return shuffle(cardPool).slice(0, sessionLength);
+  }, [cardPool, isReview, sessionLength]);
 
   const rewardsBefore = useRef(computeRewards(answers).filter(isUnlocked).map((r) => r.id));
 
@@ -85,10 +111,23 @@ export default function StudyScreen() {
   const [grade, setGrade] = useState<Grade | null>(null);
   const [expected, setExpected] = useState('');
   const [showHint, setShowHint] = useState(false);
+  const [flipped, setFlipped] = useState(false);
   const [done, setDone] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [sessionGrades, setSessionGrades] = useState<Grade[]>([]);
 
   const card = cards[index];
+
+  useEffect(() => {
+    if (!totalSeconds || done) return;
+    const endsAt = Date.now() + totalSeconds * 1000;
+    const interval = setInterval(() => {
+      const next = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+      setSecondsLeft(next);
+      if (next === 0) setDone(true);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [done, totalSeconds]);
 
   if (!card) {
     return (
@@ -137,6 +176,7 @@ export default function StudyScreen() {
     setGrade(null);
     setExpected('');
     setShowHint(false);
+    setFlipped(false);
   };
 
   if (done) {
@@ -156,9 +196,10 @@ export default function StudyScreen() {
 
   return (
     <Shell
-      title={isReview ? 'Review your mistakes' : (deck?.title ?? 'Mixed session')}
+      title={isReview ? 'Review your mistakes' : (sessionTitle ?? deck?.title ?? 'Mixed session')}
       progress={(index + (answered ? 1 : 0)) / cards.length}
       counter={`${index + 1} / ${cards.length}`}
+      timer={totalSeconds ? formatTime(secondsLeft) : undefined}
       onClose={() => router.back()}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -177,6 +218,14 @@ export default function StudyScreen() {
           </View>
 
           <View style={styles.promptCard}>
+            {card.passage ? (
+              <View style={styles.passage}>
+                <Text style={styles.passageKicker}>{card.type === 'news' ? 'NEWS BRIEF' : 'READING TEXT'}</Text>
+                <Text style={styles.passageHeading}>{card.passage.heading}</Text>
+                <Text style={styles.passageBody}>{card.passage.body}</Text>
+                {card.passage.source ? <Text style={styles.passageSource}>{card.passage.source}</Text> : null}
+              </View>
+            ) : null}
             <Text style={styles.prompt}>{card.prompt}</Text>
 
             {card.keyword ? (
@@ -211,7 +260,13 @@ export default function StudyScreen() {
             ) : null}
           </View>
 
-          {TAP_TYPES.includes(card.type) ? (
+          {card.type === 'flashcard' ? (
+            <View style={styles.flashcard}>
+              {card.image ? <Image source={FLASH_IMAGES[card.image]} contentFit="contain" style={styles.flashImage} /> : null}
+              <Text style={styles.flashPrompt}>{flipped ? 'The answer' : 'Look, recall, then reveal'}</Text>
+              {flipped ? <Text style={styles.flashAnswer}>{card.answers[0]}</Text> : <Text style={styles.flashQuestion}>What is it called?</Text>}
+            </View>
+          ) : TAP_TYPES.includes(card.type) ? (
             <View style={styles.options}>
               {(card.options ?? []).map((option, optionIndex) => (
                 <Pressable
@@ -264,6 +319,24 @@ export default function StudyScreen() {
               </Text>
               <MaterialCommunityIcons name="arrow-right" size={18} color={London.white} />
             </Pressable>
+          ) : card.type === 'flashcard' ? (
+            !flipped ? (
+              <Pressable onPress={() => setFlipped(true)} style={({ pressed }) => [styles.primary, pressed && styles.pressed]}>
+                <Text style={styles.primaryText}>Reveal answer</Text>
+                <MaterialCommunityIcons name="eye-outline" size={18} color={London.white} />
+              </Pressable>
+            ) : (
+              <View style={styles.recallActions}>
+                <Pressable onPress={() => check('')} style={({ pressed }) => [styles.againButton, pressed && styles.pressed]}>
+                  <MaterialCommunityIcons name="refresh" size={17} color={London.flagRed} />
+                  <Text style={styles.againText}>Again</Text>
+                </Pressable>
+                <Pressable onPress={() => check(card.answers[0])} style={({ pressed }) => [styles.primary, styles.gotItButton, pressed && styles.pressed]}>
+                  <Text style={styles.primaryText}>Got it</Text>
+                  <MaterialCommunityIcons name="check" size={18} color={London.white} />
+                </Pressable>
+              </View>
+            )
           ) : TAP_TYPES.includes(card.type) ? (
             <Text style={styles.footerHint}>Tap the answer you think is right.</Text>
           ) : (
@@ -393,12 +466,14 @@ function Shell({
   title,
   progress,
   counter,
+  timer,
   onClose,
   children,
 }: {
   title: string;
   progress?: number;
   counter?: string;
+  timer?: string;
   onClose: () => void;
   children: React.ReactNode;
 }) {
@@ -414,7 +489,7 @@ function Shell({
             <Text numberOfLines={1} style={styles.shellTitle}>
               {title}
             </Text>
-            <Text style={styles.shellCounter}>{counter ?? ''}</Text>
+            <View style={styles.shellMeta}>{timer ? <Text style={styles.shellTimer}>{timer}</Text> : null}<Text style={styles.shellCounter}>{counter ?? ''}</Text></View>
           </View>
           {progress !== undefined ? (
             <View style={styles.progressTrack}>
@@ -426,6 +501,10 @@ function Shell({
       {children}
     </View>
   );
+}
+
+function formatTime(seconds: number) {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 const styles = StyleSheet.create({
@@ -448,6 +527,8 @@ const styles = StyleSheet.create({
   },
   shellTitle: { flex: 1, color: London.white, fontSize: 16, fontWeight: '700' },
   shellCounter: { color: London.gold, fontSize: 14, fontWeight: '800' },
+  shellMeta: { alignItems: 'flex-end', gap: 2 },
+  shellTimer: { color: London.white, fontSize: 13, fontWeight: '900' },
   progressTrack: {
     height: 6,
     marginHorizontal: 18,
@@ -478,6 +559,11 @@ const styles = StyleSheet.create({
     gap: 10,
     ...Shadows.card,
   },
+  passage: { backgroundColor: London.stone, borderRadius: Radius.sm, padding: 14, gap: 7 },
+  passageKicker: { color: London.flagRed, fontSize: 9.5, fontWeight: '900', letterSpacing: 1.1 },
+  passageHeading: { color: London.cab, fontSize: 17, lineHeight: 22, fontWeight: '900' },
+  passageBody: { color: London.cab, fontSize: 13.5, lineHeight: 20 },
+  passageSource: { color: London.fog, fontSize: 10.5, fontStyle: 'italic' },
   prompt: { color: London.cab, fontSize: 21, lineHeight: 30, fontWeight: '600' },
   hint: { color: London.fog, fontSize: 13, lineHeight: 18 },
   cueRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -491,6 +577,12 @@ const styles = StyleSheet.create({
   cueText: { color: London.royal, fontSize: 13, fontWeight: '900', letterSpacing: 0.5 },
   given: { color: London.cab, fontSize: 14, fontStyle: 'italic' },
   hintLink: { color: London.tube, fontSize: 13, fontWeight: '700' },
+
+  flashcard: { backgroundColor: London.royal, borderRadius: Radius.lg, minHeight: 260, padding: 22, alignItems: 'center', justifyContent: 'center', gap: 12, overflow: 'hidden', ...Shadows.raised },
+  flashImage: { width: 150, height: 150 },
+  flashPrompt: { color: London.gold, fontSize: 11, fontWeight: '900', letterSpacing: 1.1, textTransform: 'uppercase' },
+  flashQuestion: { color: London.white, fontSize: 21, fontWeight: '800' },
+  flashAnswer: { color: London.white, fontSize: 27, fontWeight: '900', textAlign: 'center' },
 
   answerInput: {
     backgroundColor: London.white,
@@ -554,6 +646,10 @@ const styles = StyleSheet.create({
   },
   primaryDisabled: { backgroundColor: London.fog, opacity: 0.5 },
   primaryText: { color: London.white, fontSize: 16, fontWeight: '800' },
+  recallActions: { flexDirection: 'row', gap: 10 },
+  againButton: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7, borderWidth: 1.5, borderColor: London.flagRed, borderRadius: Radius.md, paddingVertical: 16, backgroundColor: London.white },
+  againText: { color: London.flagRed, fontSize: 16, fontWeight: '800' },
+  gotItButton: { flex: 1 },
   pressed: { opacity: 0.85 },
 
   summaryHeader: {

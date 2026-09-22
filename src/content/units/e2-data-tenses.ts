@@ -396,5 +396,15 @@ export const e2DataTenses: Unit = {
       errorTags: ['gerund-vs-infinitive'],
       level: 'C1',
     },
+    {
+      id: 'esp-news-001',
+      type: 'news',
+      prompt: 'Why does the report use the past tense for the survey result?',
+      passage: { heading: 'Survey finds shift in student travel', body: 'A survey conducted by the university last spring found that 62% of students travelled to campus by public transport. The survey period ended in June, so the result refers to a completed period. The university is now collecting new data for the current academic year.' },
+      answers: ['Because the survey covered a completed period.'],
+      options: ['Because the survey covered a completed period.', 'Because public transport no longer exists.', 'Because the current year has already ended.', 'Because 62% is an estimate.'],
+      explanation: 'The survey took place and ended last spring, so found is the correct past form.',
+      errorTags: ['esp-structure'], level: 'B2',
+    },
   ],
 };

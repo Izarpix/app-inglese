@@ -60,15 +60,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Study',
+          title: 'Practice',
           tabBarIcon: ({ color, focused }) => <TabIcon name="cards" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          title: 'Progress',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="chart-box" color={color} focused={focused} />,
+          title: 'Learn',
+          tabBarIcon: ({ color, focused }) => <TabIcon name="book-open-page-variant" color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen

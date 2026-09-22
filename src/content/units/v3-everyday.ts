@@ -1,0 +1,12 @@
+import type { Unit } from '../types';
+
+export const v3Everyday: Unit = {
+  id: 'v3', stage: 'foundations', order: 9, title: 'Everyday English: places and people', summary: 'Useful language for restaurants, directions, shops and polite conversation.', level: 'A2', errorTags: ['question-form', 'preposition'],
+  lesson: { rule: 'In everyday situations, start politely, make the request clearly, and finish with thanks. Use short fixed phrases rather than translating an Italian sentence word by word.', schema: [{ label: 'Restaurant', value: 'Could we have the menu, please? / I would like ...' }, { label: 'Directions', value: 'Excuse me, how do I get to ...? / Go straight on.' }, { label: 'Shop or service', value: 'Could you help me? / I am looking for ...' }, { label: 'Polite response', value: 'Certainly. / Of course. / You are welcome.' }], examples: [{ wrong: 'I want a table for two.', right: 'Could we have a table for two, please?', note: 'Could we have is polite and natural.' }, { wrong: 'Where is the station?', right: 'Excuse me, could you tell me how to get to the station?', note: 'A longer polite question is useful with strangers.' }], traps: ['Say on the left/right, but at the corner.', 'Use bill in a restaurant; receipt is the proof of payment.', 'Please is normally at the end of a request, not at the start of every sentence.'] },
+  cards: [
+    { id: 'v3-001', type: 'choice', prompt: 'At a restaurant, choose the most polite request.', answers: ['Could we have the menu, please?'], options: ['Could we have the menu, please?', 'Give the menu.', 'I want menu.', 'Menu now.'], explanation: 'Could we have ... please? is a natural polite request.', errorTags: ['question-form'], level: 'A2' },
+    { id: 'v3-002', type: 'fill', prompt: 'Excuse me, how do I get ___ the station?', answers: ['to'], explanation: 'We say get to a place.', errorTags: ['preposition'], level: 'A2' },
+    { id: 'v3-003', type: 'choice', prompt: '“Go straight on, then turn left.” What is this?', answers: ['Giving directions'], options: ['Giving directions', 'Ordering food', 'Making a complaint', 'Introducing yourself'], explanation: 'Go straight on and turn left are standard directions.', errorTags: ['question-form'], level: 'A2' },
+    { id: 'v3-004', type: 'rewrite', prompt: 'Vorrei il conto, per favore.', answers: ['Could I have the bill, please?', 'Could we have the bill, please?'], explanation: 'In a restaurant, ask for the bill, not the receipt.', errorTags: ['question-form'], level: 'A2' },
+  ],
+};

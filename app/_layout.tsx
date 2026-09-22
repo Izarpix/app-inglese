@@ -39,6 +39,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="study" options={{ headerShown: false, presentation: 'modal' }} />
           <Stack.Screen name="lesson" options={{ headerShown: false, presentation: 'modal' }} />
+          <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
         </Stack>
         <StatusBar style="light" />
       </ThemeProvider>

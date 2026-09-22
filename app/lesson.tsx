@@ -6,7 +6,7 @@ import { Gradient } from '@/components/london/gradient';
 import { LondonHeroArt } from '@/components/london/hero-art';
 import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
-import { getUnit } from '@/src/content';
+import { getUnit, lessonGuideFor } from '@/src/content';
 
 /**
  * One lesson, rendered from its fixed four blocks. The screen has no branching
@@ -26,6 +26,12 @@ export default function LessonScreen() {
       </View>
     );
   }
+  const guide = lessonGuideFor(unit);
+  const explanation = [
+    guide.overview,
+    `The central idea is this: ${lesson.rule} Do not try to translate word for word from Italian; first identify the situation and the meaning you want to express.`,
+    `When you need to make a choice, use the reference table below as a decision tool. For example, “${lesson.schema[0]?.label}” points you towards “${lesson.schema[0]?.value}”. Then compare your sentence with the examples and say the correct version aloud.`,
+  ];
 
   return (
     <View style={styles.root}>
@@ -55,6 +61,18 @@ export default function LessonScreen() {
             </View>
             <Text style={styles.ruleText}>{lesson.rule}</Text>
           </View>
+
+          <Block icon="map-marker-path" title="How to think about it" accent={London.royal}>
+            <Text style={styles.overview}>{guide.overview}</Text>
+            <View style={styles.memoryCard}>
+              <MaterialCommunityIcons name="brain" size={18} color={London.tube} />
+              <View style={styles.memoryText}><Text style={styles.memoryLabel}>MEMORY TIP</Text><Text style={styles.memoryTip}>{guide.memoryTip}</Text></View>
+            </View>
+          </Block>
+
+          <Block icon="text-long" title="Study explanation" accent={London.tube}>
+            {explanation.map((paragraph) => <Text key={paragraph} style={styles.explanationParagraph}>{paragraph}</Text>)}
+          </Block>
 
           {/* 2. THE SCHEMA */}
           <Block icon="table" title="The key table" accent={London.tube}>
@@ -99,11 +117,20 @@ export default function LessonScreen() {
             ))}
           </Block>
 
+          <View style={styles.recapCard}>
+            <View style={styles.recapHead}><MaterialCommunityIcons name="bookmark-check" size={18} color={London.royal} /><Text style={styles.recapTitle}>End-of-lesson recap</Text></View>
+            <Text style={styles.recapRule}>{lesson.rule}</Text>
+            {lesson.schema.slice(0, 3).map((row) => <View key={row.label} style={styles.recapRow}><MaterialCommunityIcons name="check" size={15} color={London.park} /><Text style={styles.recapText}><Text style={styles.recapStrong}>{row.label}: </Text>{row.value}</Text></View>)}
+            <Text style={styles.recapPrompt}>Before moving on, can you explain the rule and make one example of your own?</Text>
+          </View>
+
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.push({ pathname: '/study', params: { deckId: unit.id } })}
             style={({ pressed }) => [styles.primary, pressed && styles.pressed]}>
-            <Text style={styles.primaryText}>Got it</Text>
+            <Text style={styles.primaryText}>Practise this topic</Text>
+            <MaterialCommunityIcons name="arrow-right" size={18} color={London.white} />
           </Pressable>
+          <Pressable onPress={() => router.back()} style={styles.backButton}><Text style={styles.backButtonText}>Back to topics</Text></Pressable>
         </View>
       </ScrollView>
     </View>
@@ -167,6 +194,11 @@ const styles = StyleSheet.create({
   ruleHeadText: { color: London.royal, fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   ruleText: { color: '#3A2B00', fontSize: 17, lineHeight: 25, fontWeight: '700' },
 
+  overview: { color: London.cab, fontSize: 14, lineHeight: 21 },
+  explanationParagraph: { color: London.cab, fontSize: 14, lineHeight: 22 },
+  memoryCard: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', backgroundColor: London.sky, borderRadius: Radius.sm, padding: 12 },
+  memoryText: { flex: 1, gap: 2 }, memoryLabel: { color: London.tube, fontSize: 9.5, letterSpacing: 0.9, fontWeight: '900' }, memoryTip: { color: London.royal, fontSize: 13, lineHeight: 19, fontWeight: '700' },
+
   block: {
     backgroundColor: London.white,
     borderRadius: Radius.lg,
@@ -210,12 +242,20 @@ const styles = StyleSheet.create({
   trapNumberText: { color: London.flagRed, fontSize: 12, fontWeight: '900' },
   trapText: { flex: 1, color: London.cab, fontSize: 13.5, lineHeight: 20 },
 
+  recapCard: { backgroundColor: '#FFF8DF', borderRadius: Radius.lg, padding: 17, gap: 10, borderWidth: 1, borderColor: '#E8C85C', ...Shadows.card },
+  recapHead: { flexDirection: 'row', alignItems: 'center', gap: 8 }, recapTitle: { color: London.royal, fontSize: 16, fontWeight: '900' },
+  recapRule: { color: London.cab, fontSize: 14, lineHeight: 21, fontWeight: '700' }, recapRow: { flexDirection: 'row', gap: 7, alignItems: 'flex-start' }, recapText: { flex: 1, color: London.cab, fontSize: 13, lineHeight: 19 }, recapStrong: { fontWeight: '800' }, recapPrompt: { color: London.tube, fontSize: 12.5, lineHeight: 18, fontStyle: 'italic', marginTop: 2 },
+
   primary: {
+    flexDirection: 'row',
+    gap: 8,
     backgroundColor: London.royal,
     paddingVertical: 16,
     borderRadius: Radius.md,
     alignItems: 'center',
   },
   primaryText: { color: London.white, fontSize: 16, fontWeight: '800' },
+  backButton: { alignItems: 'center', paddingVertical: 8 },
+  backButtonText: { color: London.tube, fontSize: 14, fontWeight: '800' },
   pressed: { opacity: 0.85 },
 });

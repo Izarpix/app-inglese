@@ -94,7 +94,13 @@ export type CardType =
   | 'build'
   | 'transform'
   | 'box'
-  | 'form';
+  | 'form'
+  /** A visual card: turn it over, then self-assess how well you recalled it. */
+  | 'flashcard'
+  /** Read a short academic text, then answer a comprehension question. */
+  | 'reading'
+  /** Read a brief news-style report, then answer a comprehension question. */
+  | 'news';
 
 export type Level = 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -112,6 +118,10 @@ export type Card = {
   keyword?: string;
   /** `form`: the root word to be turned into the right part of speech. */
   root?: string;
+  /** Local visual used by a flashcard. Kept as a key so content stays serialisable. */
+  image?: 'big-ben' | 'double-decker' | 'tube-pass' | 'first-steps' | 'spot-on' | 'royal-flush' | 'body-hand' | 'body-eye';
+  /** Supporting text shown before a reading or news-comprehension question. */
+  passage?: { heading: string; body: string; source?: string };
   /** `transform` and `build`: the opening words already written for the learner. */
   given?: string;
   /** Optional nudge, shown on request, before the answer is revealed. */

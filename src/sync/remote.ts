@@ -42,6 +42,51 @@ function getClient(): SupabaseClient {
   return client;
 }
 
+export type AuthAccount = { id: string; email: string | null; anonymous: boolean };
+
+export async function accountStatus(): Promise<AuthAccount | null> {
+  try {
+    const { data } = await getClient().auth.getUser();
+    if (!data.user) return null;
+    return { id: data.user.id, email: data.user.email ?? null, anonymous: data.user.is_anonymous ?? false };
+  } catch { return null; }
+}
+
+/** Converts the current anonymous learner into a persistent account, retaining
+ * their existing Supabase user id and therefore their synced answers. */
+export async function createAccount(email: string, password: string): Promise<string | null> {
+  try {
+    const current = await ensureSession();
+    if (!current) return 'Unable to create a session. Try again when online.';
+    const { error } = await getClient().auth.updateUser({ email: email.trim(), password });
+    return error?.message ?? null;
+  } catch { return 'Unable to create the account. Check your connection.'; }
+}
+
+export async function signIn(email: string, password: string): Promise<string | null> {
+  try {
+    const { error } = await getClient().auth.signInWithPassword({ email: email.trim(), password });
+    return error?.message ?? null;
+  } catch { return 'Unable to sign in. Check your connection.'; }
+}
+
+export async function signOut(): Promise<void> { try { await getClient().auth.signOut(); } catch { /* keep local session */ } }
+
+export type FriendSearchResult = { id: string; nickname: string };
+export async function findFriend(nickname: string): Promise<FriendSearchResult | null> {
+  const { data, error } = await getClient().rpc('find_friend_by_nickname', { query: nickname.trim() });
+  if (error || !data?.[0]) return null;
+  return data[0] as FriendSearchResult;
+}
+
+export async function sendFriendRequest(friendId: string): Promise<string | null> {
+  const me = await ensureSession();
+  if (!me) return 'Sign in first to add friends.';
+  if (me === friendId) return 'You cannot add yourself.';
+  const { error } = await getClient().from('friendships').insert({ requester_id: me, addressee_id: friendId });
+  return error?.message ?? null;
+}
+
 /** The current user id, signing in anonymously the first time. */
 export async function ensureSession(): Promise<string | null> {
   try {
@@ -83,8 +128,7 @@ export async function pushProfile(profile: Profile): Promise<void> {
       .upsert({
         id: userId,
         display_name: profile.name,
-        level: profile.level,
-        daily_goal: profile.dailyGoal,
+        nickname: profile.nickname.trim() || null,
         updated_at: new Date().toISOString(),
       });
   } catch {

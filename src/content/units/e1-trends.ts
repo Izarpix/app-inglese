@@ -379,5 +379,15 @@ export const e1Trends: Unit = {
       errorTags: ['false-friend'],
       level: 'B2',
     },
+    {
+      id: 'esp-reading-001',
+      type: 'reading',
+      prompt: 'Which trend is described in the final sentence?',
+      passage: { heading: 'Subscription growth slows', body: 'A streaming service added 1.2 million subscribers in the first quarter, compared with 1.8 million in the previous quarter. The company said that total subscriptions still reached a record level. Analysts noted that growth had slowed, but that the overall customer base continued to expand.' },
+      answers: ['Growth continued, but at a slower rate.'],
+      options: ['Growth continued, but at a slower rate.', 'The customer base fell to a record low.', 'Subscriptions stopped changing.', 'The company lost 1.2 million customers.'],
+      explanation: 'The total continued to grow, while the number added each quarter became smaller.',
+      errorTags: ['esp-trend-vocabulary'], level: 'B2',
+    },
   ],
 };

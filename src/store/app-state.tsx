@@ -36,9 +36,10 @@ export type Suggestion = {
 
 export type Profile = {
   name: string;
-  level: 'B1' | 'B2' | 'C1';
-  /** Cards the learner wants to do every day. */
-  dailyGoal: number;
+  /** Public, opt-in handle used only for friend search. */
+  nickname: string;
+  /** Up to four earned rewards chosen for the profile showcase. */
+  featuredRewardIds: string[];
 };
 
 type AppState = {
@@ -64,9 +65,12 @@ const AppStateContext = createContext<AppState | null>(null);
  */
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [id] = useState(deviceId);
-  const [profile, setProfileState] = useState<Profile>(() =>
-    load<Profile>(KEYS.profile, { name: '', level: 'B2', dailyGoal: 10 }),
-  );
+  const [profile, setProfileState] = useState<Profile>(() => {
+    // Older installs stored level and daily-goal settings. Keep the name but
+    // supply the new showcase field so the profile update is non-breaking.
+    const saved = load<Partial<Profile>>(KEYS.profile, {});
+    return { name: saved.name ?? '', nickname: saved.nickname ?? '', featuredRewardIds: saved.featuredRewardIds ?? [] };
+  });
   const [answers, setAnswers] = useState<AnswerRecord[]>(() =>
     load<AnswerRecord[]>(KEYS.answers, []),
   );
@@ -80,7 +84,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void (async () => {
       await flush();
-      await pushProfile(load<Profile>(KEYS.profile, { name: '', level: 'B2', dailyGoal: 10 }));
+      await pushProfile(load<Profile>(KEYS.profile, { name: '', nickname: '', featuredRewardIds: [] }));
     })();
   }, []);
   useEffect(() => save(KEYS.answers, answers), [answers]);

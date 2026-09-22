@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
+import { AppIcon } from '@/components/app-icon';
 import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
 import { cardsForUnits, PRACTICE_AREAS, PRACTICE_FORMATS } from '@/src/content';
@@ -15,8 +15,8 @@ export default function PracticeAreasScreen() {
   if (!format) return <View style={styles.root}><Text style={styles.missing}>Exercise type not found.</Text></View>;
   const areas = PRACTICE_AREAS.map((area) => ({ area, count: cardsForUnits(area.unitIds).filter((card) => format.types.includes(card.type)).length })).filter((item) => item.count > 0);
   return <View style={styles.root}><ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-    <SafeTop><Gradient colors={Gradients.tube} style={styles.header}><View style={styles.headerContent}><Pressable onPress={() => router.back()} style={styles.back} hitSlop={8}><MaterialCommunityIcons name="arrow-left" size={18} color={London.white} /><Text style={styles.backText}>Exercise types</Text></Pressable><Text style={styles.kicker}>STEP 2 OF 2</Text><Text style={styles.title}>{format.title}</Text><Text style={styles.subtitle}>Choose the area you want to practise.</Text></View></Gradient></SafeTop>
-    <View style={styles.body}><Text style={styles.sectionKicker}>{areas.length} AVAILABLE STUDY AREAS</Text><View style={styles.list}>{areas.map(({ area, count }, index) => <Pressable key={area.id} onPress={() => router.push({ pathname: '/study', params: { unitIds: area.unitIds.join(','), exerciseTypes: format.types.join(','), title: `${format.title} · ${area.title}` } })} style={({ pressed }) => [styles.area, pressed && styles.pressed]}><View style={styles.number}><Text style={styles.numberText}>{index + 1}</Text></View><View style={styles.flex}><Text style={styles.areaTitle}>{area.title}</Text><Text style={styles.areaMeta}>{count} {count === 1 ? 'activity' : 'activities'}</Text></View><MaterialCommunityIcons name="arrow-right" size={20} color={London.tube} /></Pressable>)}</View>{areas.length === 0 ? <Text style={styles.empty}>Activities for this format are being prepared.</Text> : null}</View>
+    <SafeTop><Gradient colors={Gradients.tube} style={styles.header}><View style={styles.headerContent}><Pressable onPress={() => router.back()} style={styles.back} hitSlop={8}><AppIcon name="arrow-left" size={18} color={London.white} /><Text style={styles.backText}>Exercise types</Text></Pressable><Text style={styles.kicker}>STEP 2 OF 2</Text><Text style={styles.title}>{format.title}</Text><Text style={styles.subtitle}>Choose the area you want to practise.</Text></View></Gradient></SafeTop>
+    <View style={styles.body}><Text style={styles.sectionKicker}>{areas.length} AVAILABLE STUDY AREAS</Text><View style={styles.list}>{areas.map(({ area, count }, index) => <Pressable key={area.id} onPress={() => router.push({ pathname: '/study', params: { unitIds: area.unitIds.join(','), exerciseTypes: format.types.join(','), title: `${format.title} · ${area.title}` } })} style={({ pressed }) => [styles.area, pressed && styles.pressed]}><View style={styles.number}><Text style={styles.numberText}>{index + 1}</Text></View><View style={styles.flex}><Text style={styles.areaTitle}>{area.title}</Text><Text style={styles.areaMeta}>{count} {count === 1 ? 'activity' : 'activities'}</Text></View><AppIcon name="arrow-right" size={20} color={London.tube} /></Pressable>)}</View>{areas.length === 0 ? <Text style={styles.empty}>Activities for this format are being prepared.</Text> : null}</View>
   </ScrollView></View>;
 }
 

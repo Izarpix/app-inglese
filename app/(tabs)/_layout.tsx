@@ -1,9 +1,9 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/haptic-tab';
+import { AppIcon } from '@/components/app-icon';
 import { TabBarPill } from '@/components/tab-bar-pill';
 import { London } from '@/constants/london';
 import { useSafeBottom } from '@/src/hooks/use-safe-area';
@@ -93,10 +93,10 @@ export default function TabLayout() {
   );
 }
 
-function TabIcon({ name, color, focused }: { name: keyof typeof MaterialCommunityIcons.glyphMap; color: string; focused: boolean }) {
+function TabIcon({ name, color, focused }: { name: string; color: string; focused: boolean }) {
   return (
     <View style={[styles.icon, focused && styles.iconFocused]}>
-      <MaterialCommunityIcons name={name} size={focused ? 21 : 22} color={focused ? London.white : color} />
+      <AppIcon name={name} size={focused ? 21 : 22} color={focused ? London.white : color} />
     </View>
   );
 }

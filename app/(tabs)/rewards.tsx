@@ -1,8 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
+import { AppIcon } from '@/components/app-icon';
 import { LondonHeroArt } from '@/components/london/hero-art';
 import { RewardBadge } from '@/components/london/reward-badge';
 import { SafeTop } from '@/components/safe-top';
@@ -35,7 +35,7 @@ export default function RewardsScreen() {
         <View style={styles.body}>
           <View style={styles.passport}>
             <View style={styles.passportIcon}>
-              <MaterialCommunityIcons name="passport" size={27} color={London.gold} />
+              <AppIcon name="passport" size={27} color={London.gold} />
             </View>
             <View style={styles.passportText}>
               <Text style={styles.passportKicker}>LONDON LEARNER PASS</Text>

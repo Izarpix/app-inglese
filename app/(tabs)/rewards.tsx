@@ -20,7 +20,7 @@ export default function RewardsScreen() {
     <View style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <SafeTop>
-          <Gradient colors={Gradients.sunset} style={[styles.header, { minHeight: 245 }]}>
+          <Gradient colors={Gradients.sunset} style={[styles.header, { minHeight: 205 }]}>
             <LondonHeroArt variant="rewards" style={styles.headerArt} />
             <View style={styles.headerContent}>
               <Text style={styles.kicker}>YOUR COLLECTION</Text>

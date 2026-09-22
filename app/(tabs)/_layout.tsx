@@ -15,7 +15,11 @@ export default function TabLayout() {
   // that actually clears the home indicator.
   const insets = useSafeAreaInsets();
   const cssBottom = useSafeBottom();
-  const needed = Math.max(insets.bottom, cssBottom, 10);
+  // On the iPhone web app WebKit can report the home-indicator inset twice:
+  // once through the safe-area provider and again through the CSS probe.  The
+  // previous `max` placed the dock visibly too high.  Keep a small safe margin
+  // instead; the dock remains reachable while sitting at the visual bottom.
+  const needed = Math.max(Math.min(insets.bottom, cssBottom), 8);
 
   return (
     <Tabs

@@ -12,6 +12,7 @@ const ARTWORK: Record<string, ImageSource> = {
   'big-ben': require('@/assets/images/rewards/big-ben.png'),
   'spot-on': require('@/assets/images/rewards/spot-on.png'),
   'royal-flush': require('@/assets/images/rewards/royal-flush.png'),
+  'london-passport': require('@/assets/images/rewards/london-passport.png'),
 };
 
 /** Dedicated enamel artwork, dimmed and locked until the reward is earned. */

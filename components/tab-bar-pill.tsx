@@ -21,7 +21,9 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     borderRadius: Radius.xl,
-    backgroundColor: London.white,
+    // A little translucency lets the page continue underneath the floating
+    // dock, rather than creating an opaque white strip at the bottom.
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
     borderWidth: 1,
     borderColor: London.line,
     ...Shadows.raised,

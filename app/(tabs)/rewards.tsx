@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xl,
     borderBottomRightRadius: Radius.xl,
   },
-  headerArt: { position: 'absolute', width: '70%', height: 188, right: -14, top: -20, opacity: 0.72 },
+  headerArt: { position: 'absolute', width: '74%', height: 224, right: -20, top: -12, opacity: 0.58 },
   headerContent: { paddingHorizontal: 20, paddingTop: 14, gap: 2 },
   kicker: { color: 'rgba(255,255,255,0.9)', fontSize: 11, fontWeight: '800', letterSpacing: 1.6 },
   title: { color: London.white, fontSize: 32, fontWeight: '900' },

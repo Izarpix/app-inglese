@@ -20,12 +20,7 @@ export function RewardBadge({ reward, size = 64 }: { reward: Reward; size?: numb
 
   return (
     <View style={[styles.badge, { width: size, height: size, borderRadius: size / 2 }]}>
-      <Image
-        source={ARTWORK[reward.id]}
-        contentFit="contain"
-        transition={180}
-        style={[styles.artwork, !unlocked && styles.artworkLocked]}
-      />
+      {ARTWORK[reward.id] ? <Image source={ARTWORK[reward.id]} contentFit="contain" transition={180} style={[styles.artwork, !unlocked && styles.artworkLocked]} /> : <MaterialCommunityIcons name={reward.icon as keyof typeof MaterialCommunityIcons.glyphMap} size={size * 0.56} color={unlocked ? London.gold : London.fog} />}
       {!unlocked ? (
         <View style={styles.lock}>
           <MaterialCommunityIcons name="lock" size={size * 0.2} color={London.white} />

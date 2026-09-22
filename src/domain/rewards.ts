@@ -81,10 +81,14 @@ export function computeRewards(answers: AnswerRecord[]): Reward[] {
     return total;
   };
 
-  return definitions.map((definition) => ({
+  const earned = definitions.map((definition) => ({
     ...definition,
     progress: Math.min(progressOf(definition.id), definition.target),
   }));
+  const collected = earned.filter((reward) => reward.progress >= reward.target).length;
+  // New rewards automatically withdraw the passport until every current badge
+  // has been collected again.
+  return [...earned, { id: 'london-passport', title: 'London Passport', description: 'The ultimate reward: collect every current badge to earn your passport to London.', color: '#102A43', icon: 'passport', target: earned.length, progress: collected }];
 }
 
 export function isUnlocked(reward: Reward): boolean {

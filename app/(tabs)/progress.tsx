@@ -20,7 +20,7 @@ export default function LearnScreen() {
   const selectedUnits = category?.unitIds.map(getUnit).filter((unit) => unit !== undefined) ?? [];
 
   return <View style={styles.root}><ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-    <SafeTop><Gradient colors={Gradients.tube} style={styles.header}>
+    <SafeTop><Gradient colors={Gradients.tube} style={[styles.header, { minHeight: 245 }]}>
       <LondonHeroArt variant="progress" style={[styles.headerArt, PROFILE_SIZED_ART]} />
       <View style={styles.headerContent}>
         {category ? <Pressable onPress={() => setCategory(null)} style={styles.back} hitSlop={8}><MaterialCommunityIcons name="arrow-left" size={18} color={London.white} /><Text style={styles.backText}>All subjects</Text></Pressable> : <Text style={styles.kicker}>YOUR LEARNING LIBRARY</Text>}

@@ -22,6 +22,13 @@ export default function Root({ children }: PropsWithChildren) {
 
         <title>Inglesiamo</title>
         <meta name="description" content="Impara l'inglese e prepara l'esame della magistrale." />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Inglesiamo — Study English. Earn your London Passport." />
+        <meta property="og:description" content="Allenati con esercizi, flashcard, premi e simulazioni d'esame di inglese." />
+        <meta property="og:image" content="https://inglesiamo.pages.dev/inglesiamo-share.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="theme-color" content="#102A43" />
         <meta name="author" content="Izarpix" />
 
@@ -41,7 +48,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Inglesiamo" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/favicon-v2.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />
 
         <script dangerouslySetInnerHTML={{ __html: standaloneViewportScript }} />

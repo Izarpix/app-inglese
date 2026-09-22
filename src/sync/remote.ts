@@ -94,6 +94,8 @@ export async function sendFriendRequest(friendId: string): Promise<string | null
   const me = await ensureSession();
   if (!me) return 'Sign in first to add friends.';
   if (me === friendId) return 'You cannot add yourself.';
+  const { data: existing } = await getClient().from('friendships').select('id').or(`and(requester_id.eq.${me},addressee_id.eq.${friendId}),and(requester_id.eq.${friendId},addressee_id.eq.${me})`).limit(1);
+  if (existing?.length) return 'You already have a request or friendship with this learner.';
   const { error } = await getClient().from('friendships').insert({ requester_id: me, addressee_id: friendId });
   return error?.message ?? null;
 }

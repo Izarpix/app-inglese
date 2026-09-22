@@ -1,18 +1,20 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Gradient } from '@/components/london/gradient';
 import { LondonHeroArt } from '@/components/london/hero-art';
 import { RewardBadge } from '@/components/london/reward-badge';
 import { SafeTop } from '@/components/safe-top';
 import { Gradients, London, Radius, Shadows } from '@/constants/london';
-import { computeRewards, isUnlocked } from '@/src/domain/rewards';
+import { computeRewards, isUnlocked, type Reward } from '@/src/domain/rewards';
 import { useAppState } from '@/src/store/app-state';
 
 export default function RewardsScreen() {
   const { answers } = useAppState();
   const rewards = computeRewards(answers);
   const unlocked = rewards.filter(isUnlocked).length;
+  const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
 
   return (
     <View style={styles.root}>
@@ -44,7 +46,7 @@ export default function RewardsScreen() {
           {rewards.map((reward, index) => {
             const done = isUnlocked(reward);
             return (
-              <View key={reward.id} style={[styles.card, done && styles.cardDone]}>
+              <Pressable key={reward.id} disabled={!done} onPress={() => setSelectedReward(reward)} style={[styles.card, done && styles.cardDone]}>
                 <RewardBadge reward={reward} size={84} />
                 <View style={styles.text}>
                   <View style={styles.cardMeta}>
@@ -72,13 +74,18 @@ export default function RewardsScreen() {
                     {done ? 'Mastered' : `${reward.progress} of ${reward.target}`}
                   </Text>
                 </View>
-              </View>
+              </Pressable>
             );
           })}
 
           <Text style={styles.note}>Keep travelling through the course to fill your London learner pass.</Text>
         </View>
       </ScrollView>
+      <Modal visible={!!selectedReward} transparent animationType="fade" onRequestClose={() => setSelectedReward(null)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setSelectedReward(null)}>
+          {selectedReward ? <Pressable style={styles.modalCard} onPress={(event) => event.stopPropagation()}><Text style={styles.modalKicker}>YOUR REWARD</Text><RewardBadge reward={selectedReward} size={210} /><Text style={styles.modalTitle}>{selectedReward.title}</Text><Text style={styles.modalDescription}>{selectedReward.description}</Text><Text style={styles.modalClose}>Tap outside to close</Text></Pressable> : null}
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -132,4 +139,10 @@ const styles = StyleSheet.create({
   fill: { height: 6, borderRadius: 3 },
   progressText: { color: London.fog, fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   note: { color: London.fog, fontSize: 12, lineHeight: 17, marginTop: 6 },
+  modalBackdrop: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, backgroundColor: 'rgba(8,25,43,0.72)' },
+  modalCard: { width: '100%', maxWidth: 360, alignItems: 'center', gap: 14, padding: 28, borderRadius: Radius.xl, backgroundColor: London.white, ...Shadows.raised },
+  modalKicker: { color: London.flagRed, fontSize: 10, fontWeight: '900', letterSpacing: 1.5 },
+  modalTitle: { color: London.cab, fontSize: 24, fontWeight: '900', textAlign: 'center' },
+  modalDescription: { color: London.fog, fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  modalClose: { color: London.tube, fontSize: 12, fontWeight: '800', marginTop: 4 },
 });

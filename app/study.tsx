@@ -117,6 +117,10 @@ export default function StudyScreen() {
   const [sessionGrades, setSessionGrades] = useState<Grade[]>([]);
 
   const card = cards[index];
+  // The content keeps a canonical option order for authors, but learners must
+  // never be able to infer the answer from its position. Freeze one shuffled
+  // order for the current card so it does not move after a tap.
+  const visibleOptions = useMemo(() => (card?.options ? shuffle(card.options) : []), [card?.options]);
 
   useEffect(() => {
     if (!totalSeconds || done) return;
@@ -268,7 +272,7 @@ export default function StudyScreen() {
             </View>
           ) : TAP_TYPES.includes(card.type) ? (
             <View style={styles.options}>
-              {(card.options ?? []).map((option, optionIndex) => (
+              {visibleOptions.map((option, optionIndex) => (
                 <Pressable
                   key={option}
                   disabled={answered}

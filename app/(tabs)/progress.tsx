@@ -30,6 +30,7 @@ export default function LearnScreen() {
     </Gradient></SafeTop>
     <View style={styles.body}>
       {category ? <>
+        {category.id === 'grammar' ? <Pressable onPress={() => router.push('/irregular-verbs' as never)} style={styles.topic}><View style={styles.topicText}><Text style={styles.topicTitle}>Irregular verbs table</Text><Text style={styles.topicSummary}>Base form, past simple, past participle and Italian meaning.</Text></View><MaterialCommunityIcons name="table-large" size={22} color={London.tube} /></Pressable> : null}
         <Text style={styles.sectionKicker}>TOPICS IN ORDER</Text>
         <Text style={styles.intro}>Read the note first, then practise the topic when you are ready.</Text>
         <View style={styles.topicList}>{selectedUnits.map((unit, index) => <View key={unit.id} style={styles.topicRow}>

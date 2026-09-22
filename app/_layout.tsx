@@ -42,6 +42,7 @@ export default function RootLayout() {
           <Stack.Screen name="settings" options={{ headerShown: false, presentation: 'modal' }} />
           <Stack.Screen name="practice" options={{ headerShown: false }} />
           <Stack.Screen name="exam" options={{ headerShown: false }} />
+          <Stack.Screen name="irregular-verbs" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="light" />
       </ThemeProvider>

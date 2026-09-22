@@ -1,4 +1,6 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -29,8 +31,14 @@ const AppTheme = {
 };
 
 export default function RootLayout() {
+  // Safari can render the first frame before the icon font arrives; in a PWA
+  // that blank first frame may remain cached. Do not mount navigation until
+  // MaterialCommunityIcons is explicitly ready.
+  const [iconsReady] = useFonts(MaterialCommunityIcons.font);
   // On the web the app reloads itself when a new version is deployed.
   useEffect(() => startAutoUpdate(), []);
+
+  if (!iconsReady) return null;
 
   return (
     <AppStateProvider>

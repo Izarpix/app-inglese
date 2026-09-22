@@ -73,6 +73,17 @@ export async function signIn(email: string, password: string): Promise<string | 
 export async function signOut(): Promise<void> { try { await getClient().auth.signOut(); } catch { /* keep local session */ } }
 
 export type FriendSearchResult = { id: string; nickname: string };
+export type Friendship = { id: number; nickname: string; status: 'pending' | 'accepted' | 'declined'; incoming: boolean };
+
+export async function getFriendships(): Promise<Friendship[]> {
+  const { data, error } = await getClient().rpc('my_friendships');
+  return error ? [] : (data ?? []) as Friendship[];
+}
+
+export async function answerFriendRequest(id: number, accept: boolean): Promise<string | null> {
+  const { error } = await getClient().from('friendships').update({ status: accept ? 'accepted' : 'declined' }).eq('id', id);
+  return error?.message ?? null;
+}
 export async function findFriend(nickname: string): Promise<FriendSearchResult | null> {
   const { data, error } = await getClient().rpc('find_friend_by_nickname', { query: nickname.trim() });
   if (error || !data?.[0]) return null;

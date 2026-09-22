@@ -73,11 +73,11 @@ export async function signIn(email: string, password: string): Promise<string | 
 export async function signOut(): Promise<void> { try { await getClient().auth.signOut(); } catch { /* keep local session */ } }
 
 export type FriendSearchResult = { id: string; nickname: string };
-export type Friendship = { id: number; nickname: string; status: 'pending' | 'accepted' | 'declined'; incoming: boolean };
+export type Friendship = { id: number; nickname: string; avatarId?: string | null; status: 'pending' | 'accepted' | 'declined'; incoming: boolean };
 
 export async function getFriendships(): Promise<Friendship[]> {
   const { data, error } = await getClient().rpc('my_friendships');
-  return error ? [] : (data ?? []) as Friendship[];
+  return error ? [] : (data ?? []).map((row: Friendship & { avatar_id?: string | null }) => ({ ...row, avatarId: row.avatar_id ?? null }));
 }
 
 export async function answerFriendRequest(id: number, accept: boolean): Promise<string | null> {
@@ -141,6 +141,7 @@ export async function pushProfile(profile: Profile): Promise<void> {
       .upsert({
         id: userId,
         display_name: profile.name,
+        avatar_id: profile.avatarId,
         nickname: profile.nickname.trim() || null,
         updated_at: new Date().toISOString(),
       });

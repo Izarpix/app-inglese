@@ -12,6 +12,7 @@ import type { ErrorTag } from '@/src/content/types';
 import type { Grade } from '@/src/domain/grading';
 import { flush, pushProfile, queueAnswer, queueSuggestion } from '@/src/sync/remote';
 import { deviceId, load, save } from './storage';
+import { randomAvatarId } from '@/src/avatars';
 
 const KEYS = {
   profile: 'profile',
@@ -36,6 +37,8 @@ export type Suggestion = {
 
 export type Profile = {
   name: string;
+  /** Chosen locally on first launch, then synced with the learner's account. */
+  avatarId: string;
   /** Public, opt-in handle used only for friend search. */
   nickname: string;
   /** Up to four earned rewards chosen for the profile showcase. */
@@ -69,7 +72,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     // Older installs stored level and daily-goal settings. Keep the name but
     // supply the new showcase field so the profile update is non-breaking.
     const saved = load<Partial<Profile>>(KEYS.profile, {});
-    return { name: saved.name ?? '', nickname: saved.nickname ?? '', featuredRewardIds: saved.featuredRewardIds ?? [] };
+    return { name: saved.name ?? '', avatarId: saved.avatarId ?? randomAvatarId(), nickname: saved.nickname ?? '', featuredRewardIds: saved.featuredRewardIds ?? [] };
   });
   const [answers, setAnswers] = useState<AnswerRecord[]>(() =>
     load<AnswerRecord[]>(KEYS.answers, []),
@@ -84,7 +87,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void (async () => {
       await flush();
-      await pushProfile(load<Profile>(KEYS.profile, { name: '', nickname: '', featuredRewardIds: [] }));
+      await pushProfile(load<Profile>(KEYS.profile, { name: '', avatarId: randomAvatarId(), nickname: '', featuredRewardIds: [] }));
     })();
   }, []);
   useEffect(() => save(KEYS.answers, answers), [answers]);
